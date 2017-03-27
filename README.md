@@ -7,7 +7,7 @@ An HTTP & HTTP/2 client for Android . include SOAP WSDL,GET,POST
 Download
 --------
 
-Download [the latest JAR][3] or grab via Maven:
+Download [the latest aar][3] or grab via Maven:
 ```xml
 
 <dependency>
