@@ -1,7 +1,7 @@
 Requester
 ======
 
-An HTTP & HTTP/2 client for Android . include SOAP WSDL,GET,POST
+An HTTP & HTTP/2 client for Android . include SOAP WSDL,Web Api webservices
 
 
 Download
@@ -55,6 +55,9 @@ Requester aRequester = new Requester.RequesterBuilder(this)
       public void onCache(Object context, Object model) {
         // TODO Auto-generated method stub
         
+        Company aComany=(Company)model;
+        System.out.println(aCompany.name);
+        
       }
 
       @Override
@@ -62,11 +65,15 @@ Requester aRequester = new Requester.RequesterBuilder(this)
        
         System.out.println(response);
       
-       }
+      }
 
       @Override
       public void onSuccess(Object context, Object model, boolean hasCache) {
         // TODO Auto-generated method stub
+        
+        Company aComany=(Company)model;
+        System.out.println(aCompany.name);
+        
         
       }
 
@@ -74,7 +81,7 @@ Requester aRequester = new Requester.RequesterBuilder(this)
       public void onError(Object context, Exception exception, String exceptionFarsi) {
         // TODO Auto-generated method stub
         
-      . }
+      }
 
 
 
@@ -83,6 +90,60 @@ Requester aRequester = new Requester.RequesterBuilder(this)
      aRequester.executeAnSync();
   }
 ```
+
+Web Api webservice sample
+```java
+
+
+Requester aRequester = new Requester.RequesterBuilder(this)
+    .setUrl("https://httpbin.org/get")
+    .setModel(Args.class)
+    .setMethod(Method.GET)
+    .addRequestHandler(new IRequestHandler() {
+
+      @Override
+      public void onStart() {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void onCache(Object context, Object model) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void onResponse(Object context, StringBuilder response) {
+       
+        System.out.println(response);
+      
+      }
+
+      @Override
+      public void onSuccess(Object context, Object model, boolean hasCache) {
+        // TODO Auto-generated method stub
+        
+        Args aArgs=(Argsy)model;
+        System.out.println(Args.name);
+        
+        
+      }
+
+      @Override
+      public void onError(Object context, Exception exception, String exceptionFarsi) {
+        // TODO Auto-generated method stub
+        
+      }
+
+
+
+    }).build();
+     
+     aRequester.executeAnSync();
+  }
+```
+
 
 License
 -------
