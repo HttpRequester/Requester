@@ -23,39 +23,7 @@ or Gradle:
 compile 'ir.bpadashi:requester:1.0.1'
 ```
 
-Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
 
-
-MockWebServer
--------------
-
-A library for testing HTTP, HTTPS, and HTTP/2 clients.
-
-MockWebServer coupling with OkHttp is essential for proper testing of HTTP/2 so that code can be shared.
-
-### Download
-
-Download [the latest JAR][4] or grab via Maven:
-```xml
-<dependency>
-  <groupId>com.squareup.okhttp3</groupId>
-  <artifactId>mockwebserver</artifactId>
-  <version>3.6.0</version>
-  <scope>test</scope>
-</dependency>
-```
-or Gradle:
-```groovy
-testCompile 'com.squareup.okhttp3:mockwebserver:3.6.0'
-```
-
-ProGuard
---------
-
-If you are using ProGuard you might need to add the following option:
-```
--dontwarn okhttp3.**
-```
 
 License
 -------
