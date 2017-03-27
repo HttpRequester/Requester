@@ -9,15 +9,18 @@ Download
 
 Download [the latest JAR][3] or grab via Maven:
 ```xml
+bpadashi:
 <dependency>
-  <groupId>com.squareup.okhttp3</groupId>
-  <artifactId>okhttp</artifactId>
-  <version>3.6.0</version>
+  <groupId>ir.bpadashi</groupId>
+  <artifactId>requester</artifactId>
+  <version>1.0.1</version>
+  <type>pom</type>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'com.squareup.okhttp3:okhttp:3.6.0'
+bpadashi:
+compile 'ir.bpadashi:requester:1.0.1'
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
