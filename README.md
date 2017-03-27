@@ -1,9 +1,7 @@
 Requester
 ======
 
-An HTTP & HTTP/2 client for Android . include SOAP WSDL,Web Api webservices
-
-
+An HTTP & HTTP/2 client for Android . include SOAP WSDL,Web Api webservices And json mapper
 Download
 --------
 
