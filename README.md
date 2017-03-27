@@ -22,7 +22,15 @@ or Gradle:
 
 compile 'ir.bpadashi:requester:1.0.1'
 ```
+Add to build.gradle of your app:
+```groovy
 
+repositories {
+    maven { url  "http://bpadashi.bintray.com/maven" }
+    maven { url 'https://oss.sonatype.org/content/repositories/ksoap2-android-releases' }
+
+}
+``
 
 
 License
