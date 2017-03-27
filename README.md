@@ -30,7 +30,7 @@ repositories {
     maven { url 'https://oss.sonatype.org/content/repositories/ksoap2-android-releases' }
 
 }
-```groovy
+```
 
 License
 -------
