@@ -9,7 +9,7 @@ Download
 
 Download [the latest JAR][3] or grab via Maven:
 ```xml
-bpadashi:
+
 <dependency>
   <groupId>ir.bpadashi</groupId>
   <artifactId>requester</artifactId>
@@ -19,7 +19,7 @@ bpadashi:
 ```
 or Gradle:
 ```groovy
-bpadashi:
+
 compile 'ir.bpadashi:requester:1.0.1'
 ```
 
