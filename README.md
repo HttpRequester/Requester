@@ -11,7 +11,7 @@ Download [the latest aar][3] or grab via Maven:
 ```xml
 
 <dependency>
-  <groupId>ir.bpadashi</groupId>
+  <groupId>ir.bpadashi.requester</groupId>
   <artifactId>requester</artifactId>
   <version>1.0.1</version>
   <type>pom</type>
@@ -20,13 +20,13 @@ Download [the latest aar][3] or grab via Maven:
 or Gradle:
 ```groovy
 
-compile 'ir.bpadashi:requester:1.0.1'
+compile 'ir.bpadashi.requester:requester:1.0.1'
 ```
 Add to build.gradle of your app:
 ```groovy
 
 repositories {
-    maven { url  "http://bpadashi.bintray.com/maven" }
+    maven { url  "http://repobpadashi.bintray.com/maven" }
     maven { url 'https://oss.sonatype.org/content/repositories/ksoap2-android-releases' }
 
 }
@@ -163,6 +163,6 @@ License
 
  [1]: http://square.github.io/okhttp
  [2]: https://github.com/square/okhttp/wiki
- [3]: https://dl.bintray.com/bpadashi/maven/ir/bpadashi/requester/1.0.1/:requester-1.0.1.aar
+ [3]: https://dl.bintray.com/repobpadashi/maven/ir/bpadashi/requester/1.0.1/:requester-1.0.1.aar
  [4]: https://search.maven.org/remote_content?g=com.squareup.okhttp3&a=mockwebserver&v=LATEST
  [snap]: https://oss.sonatype.org/content/repositories/snapshots/
