@@ -58,11 +58,11 @@ Requester aRequester = new Requester.RequesterBuilder(this)
       }
 
       @Override
-      public void onResponse(Object context, StringBuilder response) {
-
-        System.out.println(response);
-        
-      }
+      public void onResponse(Object context, StringBuilder response) {
+       
+        System.out.println(response);
+      
+       }
 
       @Override
       public void onSuccess(Object context, Object model, boolean hasCache) {
@@ -74,7 +74,7 @@ Requester aRequester = new Requester.RequesterBuilder(this)
       public void onError(Object context, Exception exception, String exceptionFarsi) {
         // TODO Auto-generated method stub
         
-      }
+      . }
 
 
 
