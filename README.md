@@ -43,7 +43,7 @@ SOAP webservice sample
 ```java
 
 
-Requester aRequester = new Requester.RequesterBuilder(this)
+        Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
                 .setMethodName("GetProducts")
@@ -98,7 +98,7 @@ Requester aRequester = new Requester.RequesterBuilder(this)
 
 Web Api webservice sample
 ```java
-Requester aRequester = new Requester.RequesterBuilder(this)
+       Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/reg")
                 .addParam("email","email@cc.com")
