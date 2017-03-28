@@ -143,8 +143,12 @@ Requester aRequester = new Requester.RequesterBuilder(this)
                 }).build();
 
         aRequester.executeAnSync();
-        
-        
+
+```
+
+Create class Model for Json Mapping
+```java
+
    class Model implements Serializable {
    
         public int statusCode;
