@@ -38,110 +38,127 @@ SOAP webservice sample
 
 
 Requester aRequester = new Requester.RequesterBuilder(this)
-    .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
-    .setWsdlMethod("GetCompanyInfo")
-    .addParam("companyId", 20)
-    .setModel(Company.class)
-    .setMethod(Method.SOAP)
-    .addRequestHandler(new IRequestHandler() {
 
-      @Override
-      public void onStart() {
-        // TODO Auto-generated method stub
-        
-      }
+                .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
+                .setMethodName("GetProducts")
+                .setNamespace("http://tempuri.org/")
+                .setSoapAction("http://tempuri.org/GetProducts")
 
-      @Override
-      public void onCache(Object context, Object model) {
-        // TODO Auto-generated method stub
-        
-        Company aComany=(Company)model;
-        System.out.println(aCompany.name);
-        
-      }
+                .addParam("companyId", 20)
 
-      @Override
-      public void onResponse(Object context, StringBuilder response) {
-       
-        System.out.println(response);
-      
-      }
+                .setReturnType(ReturnType.SOAP_OBJECT)
+                .setMethod(Method.SOAP)
+                
+                .addRequestHandler(new IRequestHandler() {
 
-      @Override
-      public void onSuccess(Object context, Object model, boolean hasCache) {
-        // TODO Auto-generated method stub
-        
-        Company aComany=(Company)model;
-        System.out.println(aCompany.name);
-        
-        
-      }
+                    @Override
+                    public void onStart() {
+                        // TODO Auto-generated method stub
 
-      @Override
-      public void onError(Object context, Exception exception, String exceptionFarsi) {
-        // TODO Auto-generated method stub
-        
-      }
+                    }
+
+                    @Override
+                    public void onCache(ParentContext context, Object responseObj) {
+                        // TODO Auto-generated method stub
+
+                    }
+
+                    @Override
+                    public void onResponse(ParentContext context, ResponseString response) {
 
 
+                    }
 
-    }).build();
-     
-     aRequester.executeAnSync();
-  }
+                    @Override
+                    public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
+
+                        SoapObject soapObject = (SoapObject) responseObj;
+                        System.out.println(soapObject.getPropertyCount());
+
+
+                    }
+
+                    @Override
+                    public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+                        // TODO Auto-generated method stub
+
+                    }
+
+
+                }).build();
+
+        aRequester.executeAnSync();
 ```
 
 Web Api webservice sample
 ```java
-
-
 Requester aRequester = new Requester.RequesterBuilder(this)
-    .setUrl("https://httpbin.org/get")
-    .setModel(Args.class)
-    .setMethod(Method.GET)
-    .addRequestHandler(new IRequestHandler() {
 
-      @Override
-      public void onStart() {
-        // TODO Auto-generated method stub
+                .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/reg")
+                .addParam("email","email@cc.com")
+                .addParam("password","123456")
+                .setMethod(Method.GET)
+                .setModel(Model.class)
+                .addRequestHandler(new IRequestHandler() {
+
+                    @Override
+                    public void onStart() {
+                        // Setup your preloader here!!!
+
+                    }
+
+                    @Override
+                    public void onCache(ParentContext context, Object responseObj) {
+
+                    }
+
+                    @Override
+                    public void onResponse(ParentContext context, ResponseString responseString) {
+
+                        System.out.println(responseString.getResponse());
+
+                    }
+
+                    @Override
+                    public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
+
+                        Model aModel=(Model)responseObj;
+
+                        System.out.println(aModel.getStatusCode());
+                        System.out.println(aModel.getStatusDes());
+
+
+
+                    }
+
+                    @Override
+                    public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+                        // TODO Auto-generated method stub
+
+                        System.out.println(exception.getMessage());
+
+                    }
+
+
+                }).build();
+
+        aRequester.executeAnSync();
         
-      }
-
-      @Override
-      public void onCache(Object context, Object model) {
-        // TODO Auto-generated method stub
         
-      }
+   class Model implements Serializable {
+   
+        public int statusCode;
+        public String statusDes;
 
-      @Override
-      public void onResponse(Object context, StringBuilder response) {
-       
-        System.out.println(response);
-      
-      }
+        public int getStatusCode() {
+            return statusCode;
+        }
 
-      @Override
-      public void onSuccess(Object context, Object model, boolean hasCache) {
-        // TODO Auto-generated method stub
-        
-        Args aArgs=(Argsy)model;
-        System.out.println(Args.name);
-        
-        
-      }
+        public String getStatusDes() {
+            return statusDes;
+        }
 
-      @Override
-      public void onError(Object context, Exception exception, String exceptionFarsi) {
-        // TODO Auto-generated method stub
-        
-      }
-
-
-
-    }).build();
-     
-     aRequester.executeAnSync();
-  }
+    }
 ```
 
 
