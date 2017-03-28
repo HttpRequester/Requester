@@ -86,17 +86,17 @@ public class RequesterRunnable implements Runnable {
         });
     }
 
-    public void onResponseUi(final IRequestHandler aRequestHandler, final StringBuilder json) {
+    public void onResponseUi(final IRequestHandler aRequestHandler, final Object response) {
 
         if (this.isFragment) {
-            onResponseFragment(aRequestHandler, json);
+            onResponseFragment(aRequestHandler, response);
             return;
         } else if (context == null)
             return;
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                aRequestHandler.onResponse(context, json);
+                aRequestHandler.onResponse(context, response);
             }
         });
     }
@@ -143,13 +143,13 @@ public class RequesterRunnable implements Runnable {
         });
     }
 
-    public void onResponseFragment(final IRequestHandler aRequestHandler, final StringBuilder json) {
+    public void onResponseFragment(final IRequestHandler aRequestHandler, final Object response) {
         if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
             return;
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                aRequestHandler.onResponse(fragment, json);
+                aRequestHandler.onResponse(fragment, response);
             }
         });
     }
@@ -217,7 +217,7 @@ public class RequesterRunnable implements Runnable {
 
         }
 
-        StringBuilder str = null;
+        Object str = null;
         try {
             switch (aMethod) {
                 case GET:
@@ -250,7 +250,7 @@ public class RequesterRunnable implements Runnable {
 
             Mapper mapper = new Mapper();
             try {
-                obj = mapper.map(str, typeClass);
+                obj = mapper.map(new StringBuilder(str.toString()), typeClass);
                 onSuccessUi(aRequestHandler, obj, hasCache);
             } catch (JSONException e) {
                 onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
@@ -259,17 +259,18 @@ public class RequesterRunnable implements Runnable {
                 onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
                 e.printStackTrace();
             }
+
+            try {
+                new Serialize().saveToFile(context, obj, getRequestId(url));
+            } catch (NoSuchAlgorithmException e) {
+                onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
+                e.printStackTrace();
+            }
         }
 
-        try {
-            new Serialize().saveToFile(context, obj, getRequestId(url));
-        } catch (NoSuchAlgorithmException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
-            e.printStackTrace();
-        }
 
     }
 
@@ -353,7 +354,7 @@ public class RequesterRunnable implements Runnable {
 
     }
 
-    private StringBuilder getRequestWsdl(String urlString) throws IOException, XmlPullParserException {
+    private Object getRequestWsdl(String urlString) throws IOException, XmlPullParserException {
 
         String SOAP_ACTION = SoapAction;
         String METHOD_NAME = MethodName;
@@ -377,12 +378,9 @@ public class RequesterRunnable implements Runnable {
 
         ht.call(SOAP_ACTION, envelope);
 
-        response = (SoapPrimitive) envelope.getResponse();
+        response = envelope.getResponse();
 
-        StringBuilder aStringBuilder = new StringBuilder();
-        aStringBuilder.append(response);
-
-        return aStringBuilder;
+        return response;
 
     }
 

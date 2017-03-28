@@ -116,7 +116,7 @@ public class Requester {
 
 
         public boolean isPlainText(){
-            return isPlainText ;
+            return isPlainText;
         }
 
 
