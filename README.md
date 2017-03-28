@@ -44,10 +44,11 @@ Requester aRequester = new Requester.RequesterBuilder(this)
                 .setNamespace("http://tempuri.org/")
                 .setSoapAction("http://tempuri.org/GetProducts")
 
-                .dontCache()
-
                 .addParam("companyId", 20)
+
+                .setReturnType(ReturnType.SOAP_OBJECT)
                 .setMethod(Method.SOAP)
+                
                 .addRequestHandler(new IRequestHandler() {
 
                     @Override
@@ -57,28 +58,28 @@ Requester aRequester = new Requester.RequesterBuilder(this)
                     }
 
                     @Override
-                    public void onCache(Object context, Object model) {
+                    public void onCache(ParentContext context, Object responseObj) {
                         // TODO Auto-generated method stub
 
                     }
 
                     @Override
-                    public void onResponse(Object context, Object response) {
+                    public void onResponse(ParentContext context, ResponseString response) {
 
 
                     }
 
                     @Override
-                    public void onSuccess(Object context, Object model, boolean hasCache) {
+                    public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-                        SoapObject soapObject=(SoapObject)model;
+                        SoapObject soapObject = (SoapObject) responseObj;
                         System.out.println(soapObject.getPropertyCount());
 
 
                     }
 
                     @Override
-                    public void onError(Object context, Exception exception, String exceptionFarsi) {
+                    public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
                         // TODO Auto-generated method stub
 
                     }
@@ -91,55 +92,73 @@ Requester aRequester = new Requester.RequesterBuilder(this)
 
 Web Api webservice sample
 ```java
-
-
 Requester aRequester = new Requester.RequesterBuilder(this)
-    .setUrl("https://httpbin.org/get")
-    .setModel(Args.class)
-    .setMethod(Method.GET)
-    .addRequestHandler(new IRequestHandler() {
 
-      @Override
-      public void onStart() {
-        // TODO Auto-generated method stub
+                .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/reg")
+                .addParam("email","email@cc.com")
+                .addParam("password","123456")
+                .setMethod(Method.GET)
+                .setModel(Model.class)
+                .addRequestHandler(new IRequestHandler() {
+
+                    @Override
+                    public void onStart() {
+                        // Setup your preloader here!!!
+
+                    }
+
+                    @Override
+                    public void onCache(ParentContext context, Object responseObj) {
+
+                    }
+
+                    @Override
+                    public void onResponse(ParentContext context, ResponseString responseString) {
+
+                        System.out.println(responseString.getResponse());
+
+                    }
+
+                    @Override
+                    public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
+
+                        Model aModel=(Model)responseObj;
+
+                        System.out.println(aModel.getStatusCode());
+                        System.out.println(aModel.getStatusDes());
+
+
+
+                    }
+
+                    @Override
+                    public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+                        // TODO Auto-generated method stub
+
+                        System.out.println(exception.getMessage());
+
+                    }
+
+
+                }).build();
+
+        aRequester.executeAnSync();
         
-      }
-
-      @Override
-      public void onCache(Object context, Object model) {
-        // TODO Auto-generated method stub
         
-      }
+        class Model implements Serializable {
 
-      @Override
-      public void onResponse(Object context, StringBuilder response) {
-       
-        System.out.println(response);
-      
-      }
+        public int statusCode;
+        public String statusDes;
 
-      @Override
-      public void onSuccess(Object context, Object model, boolean hasCache) {
-        // TODO Auto-generated method stub
-        
-        Args aArgs=(Argsy)model;
-        System.out.println(Args.name);
-        
-        
-      }
+        public int getStatusCode() {
+            return statusCode;
+        }
 
-      @Override
-      public void onError(Object context, Exception exception, String exceptionFarsi) {
-        // TODO Auto-generated method stub
-        
-      }
+        public String getStatusDes() {
+            return statusDes;
+        }
 
-
-
-    }).build();
-     
-     aRequester.executeAnSync();
-  }
+    }
 ```
 
 
