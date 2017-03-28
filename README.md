@@ -31,6 +31,13 @@ repositories {
 }
 ```
 
+Permission
+```xml
+    <uses-permission android:name="android.permission.INTERNET" /> 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+```
+
 
 SOAP webservice sample
 ```java
