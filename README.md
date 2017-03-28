@@ -59,8 +59,7 @@ SOAP webservice sample
 
                     @Override
                     public void onStart() {
-                        // TODO Auto-generated method stub
-
+                        // Setup your preloader here!!!
                     }
 
                     @Override
@@ -72,6 +71,7 @@ SOAP webservice sample
                     @Override
                     public void onResponse(ParentContext context, ResponseString response) {
 
+                        System.out.println(responseString.getResponse());
 
                     }
 
@@ -86,7 +86,8 @@ SOAP webservice sample
 
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
-                        // TODO Auto-generated method stub
+                    
+                        System.out.println(exception.getMessage());
 
                     }
 
@@ -110,7 +111,6 @@ Web Api webservice sample
                     @Override
                     public void onStart() {
                         // Setup your preloader here!!!
-
                     }
 
                     @Override
@@ -139,7 +139,6 @@ Web Api webservice sample
 
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
-                        // TODO Auto-generated method stub
 
                         System.out.println(exception.getMessage());
 
