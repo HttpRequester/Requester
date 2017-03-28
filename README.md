@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Requester
 ======
 
@@ -215,3 +216,7 @@ License
  [3]: https://dl.bintray.com/repobpadashi/maven/ir/bpadashi/requester/requester/1.0.1/requester-1.0.1.aar
  [4]: https://search.maven.org/remote_content?g=com.squareup.okhttp3&a=mockwebserver&v=LATEST
  [snap]: https://oss.sonatype.org/content/repositories/snapshots/
+=======
+# Requester
+Client for Android for SOAP WebApi webservices with json mapper
+>>>>>>> fd30a6f10f5e716a3522f3b852a0c35e1560a7de
