@@ -1,4 +1,4 @@
-package ir.bpadashi.requester;
+package ir.bpadashi.requester.statics;
 
 public enum Method {
 	

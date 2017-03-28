@@ -9,6 +9,8 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 
 import ir.bpadashi.requester.model.Params;
+import ir.bpadashi.requester.statics.Method;
+import ir.bpadashi.requester.statics.ReturnType;
 import ir.bpadashi.requester.threadpool.ConnectionThreadPool;
 import ir.bpadashi.requester.threadpool.ConnectionThreadSingle;
 
@@ -61,8 +63,10 @@ public class Requester {
         private Class typeClass;
         private IRequestHandler aRequestHandler;
         private List<Params> paramList;
+
         private Method aMethod;
-        private boolean isPlainText;
+        private ReturnType returnType;
+
 
         //Getter
 
@@ -114,9 +118,8 @@ public class Requester {
             return aMethod;
         }
 
-
-        public boolean isPlainText(){
-            return isPlainText;
+        public ReturnType getReturnType(){
+            return returnType;
         }
 
 
@@ -165,10 +168,6 @@ public class Requester {
             return this;
         }
 
-        public RequesterBuilder dontCache() {
-            this.isPlainText = true;
-            return this;
-        }
 
         public RequesterBuilder addRequestHandler(final IRequestHandler aRequestHandler) {
             this.aRequestHandler = aRequestHandler;
@@ -186,6 +185,11 @@ public class Requester {
 
         public RequesterBuilder setMethod(Method aMethod) {
             this.aMethod = aMethod;
+            return this;
+        }
+
+        public RequesterBuilder setReturnType(ReturnType returnType) {
+            this.returnType = returnType;
             return this;
         }
 

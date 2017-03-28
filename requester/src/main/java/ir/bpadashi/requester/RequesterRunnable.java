@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import org.json.JSONException;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
@@ -23,16 +22,18 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import ir.bpadashi.requester.model.Params;
+import ir.bpadashi.requester.model.ParentContext;
+import ir.bpadashi.requester.model.ResponseString;
+import ir.bpadashi.requester.statics.Method;
+import ir.bpadashi.requester.statics.ReturnType;
 import ir.bpadashi.requester.util.Mapper;
 import ir.bpadashi.requester.util.NetworkUtil;
 import ir.bpadashi.requester.util.Serialize;
 import ir.bpadashi.requester.util.TextUtil;
+
 
 public class RequesterRunnable implements Runnable {
 
@@ -47,7 +48,7 @@ public class RequesterRunnable implements Runnable {
     public String MethodName;
     public String Namespace;
     private Method aMethod;
-    private boolean isPlainText;
+    private ReturnType returnType;
 
 
     public RequesterRunnable(Requester.RequesterBuilder requester) {
@@ -62,7 +63,7 @@ public class RequesterRunnable implements Runnable {
         this.url = requester.getUrl();
         this.typeClass = requester.getTypeClass();
         this.paramList = requester.getParamList();
-        this.isPlainText = requester.isPlainText();
+        this.returnType = requester.getReturnType();
         this.SoapAction = requester.getSoapAction();
         this.MethodName = requester.getMethodName();
         this.Namespace = requester.getNamespace();
@@ -81,7 +82,7 @@ public class RequesterRunnable implements Runnable {
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                aRequestHandler.onError(context, exception, exceptionFarsi);
+                aRequestHandler.onError(new ParentContext(context), exception, exceptionFarsi);
             }
         });
     }
@@ -96,7 +97,7 @@ public class RequesterRunnable implements Runnable {
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                aRequestHandler.onResponse(context, response);
+                aRequestHandler.onResponse(new ParentContext(context), new ResponseString(response));
             }
         });
     }
@@ -111,7 +112,7 @@ public class RequesterRunnable implements Runnable {
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                aRequestHandler.onCache(context, model);
+                aRequestHandler.onCache(new ParentContext(context), model);
             }
         });
     }
@@ -126,7 +127,7 @@ public class RequesterRunnable implements Runnable {
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                aRequestHandler.onSuccess(context, model, hasCache);
+                aRequestHandler.onSuccess(new ParentContext(context), model, hasCache);
             }
         });
     }
@@ -138,7 +139,7 @@ public class RequesterRunnable implements Runnable {
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                aRequestHandler.onError(fragment, exception, exceptionFarsi);
+                aRequestHandler.onError(new ParentContext(fragment), exception, exceptionFarsi);
             }
         });
     }
@@ -149,7 +150,7 @@ public class RequesterRunnable implements Runnable {
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                aRequestHandler.onResponse(fragment, response);
+                aRequestHandler.onResponse(new ParentContext(fragment), new ResponseString(response));
             }
         });
     }
@@ -160,7 +161,7 @@ public class RequesterRunnable implements Runnable {
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                aRequestHandler.onCache(fragment, model);
+                aRequestHandler.onCache(new ParentContext(fragment), model);
             }
         });
     }
@@ -171,7 +172,7 @@ public class RequesterRunnable implements Runnable {
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                aRequestHandler.onSuccess(fragment, model, hasCache);
+                aRequestHandler.onSuccess(new ParentContext(fragment), model, hasCache);
             }
         });
     }
@@ -217,20 +218,20 @@ public class RequesterRunnable implements Runnable {
 
         }
 
-        Object str = null;
+        Object response = null;
         try {
             switch (aMethod) {
                 case GET:
-                    str = getRequestGet(url);
+                    response = getRequestGet(url);
                     break;
                 case POST:
-                    str = getRequestPost(url);
+                    response = getRequestPost(url);
                     break;
                 case SOAP:
-                    str = getRequestWsdl(url);
+                    response = getRequestWsdl(url);
                     break;
                 default:
-                    str = getRequestGet(url);
+                    response = getRequestGet(url);
             }
         } catch (IOException e) {
             onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
@@ -239,18 +240,18 @@ public class RequesterRunnable implements Runnable {
             onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
             e.printStackTrace();
         }
-        onResponseUi(aRequestHandler, str);
+        onResponseUi(aRequestHandler, response);
 
         Object obj = null;
 
-        if (isPlainText) {
-            obj = str;
-            onSuccessUi(aRequestHandler, str, hasCache);
+        if (returnType == ReturnType.TEXT || returnType == ReturnType.SOAP_OBJECT || returnType == ReturnType.SOAP_PRIMTIVE) {
+            obj = response;
+            onSuccessUi(aRequestHandler, response, hasCache);
         } else {
 
             Mapper mapper = new Mapper();
             try {
-                obj = mapper.map(new StringBuilder(str.toString()), typeClass);
+                obj = mapper.map(new StringBuilder(response.toString()), typeClass);
                 onSuccessUi(aRequestHandler, obj, hasCache);
             } catch (JSONException e) {
                 onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
@@ -373,14 +374,13 @@ public class RequesterRunnable implements Runnable {
         envelope.setOutputSoapObject(request);
 
         HttpTransportSE ht = new HttpTransportSE(URL);
-
-        Object response = null;
-
         ht.call(SOAP_ACTION, envelope);
 
-        response = envelope.getResponse();
+
+        Object response = envelope.getResponse();
 
         return response;
+
 
     }
 

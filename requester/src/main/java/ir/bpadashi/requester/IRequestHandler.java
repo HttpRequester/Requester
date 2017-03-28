@@ -1,12 +1,15 @@
 package ir.bpadashi.requester;
 
+import ir.bpadashi.requester.model.ParentContext;
+import ir.bpadashi.requester.model.ResponseString;
+
 public interface IRequestHandler  {
 	
 	public  void onStart();
-	public  void onCache(Object context,Object model);
-	public  void onResponse(Object context,Object response);
-	public  void onSuccess(Object context,Object model,boolean hasCache);
-	public  void onError(Object context, Exception exception, String exceptionFarsi);
+	public  void onCache(ParentContext context,Object responseObj);
+	public  void onResponse(ParentContext context,ResponseString responseString);
+	public  void onSuccess(ParentContext context, Object responseObj, boolean hasCache);
+	public  void onError(ParentContext context, Exception exception, String exceptionFarsi);
 	
 	
 	
