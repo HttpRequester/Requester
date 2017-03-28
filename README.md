@@ -145,8 +145,8 @@ Requester aRequester = new Requester.RequesterBuilder(this)
         aRequester.executeAnSync();
         
         
-        class Model implements Serializable {
-
+   class Model implements Serializable {
+   
         public int statusCode;
         public String statusDes;
 
