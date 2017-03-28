@@ -40,10 +40,10 @@ ext {
 
             libraryDescription: "for get data and json from GET POST SOAP WSDL webservice and cast to model",
 
-            siteUrl           : "https://github.com/babakpadashi/Requester.git",
-            gitUrl            : "https://github.com/babakpadashi/Requester.git",
+            siteUrl           : "https://github.com/HttpRequester/Requester.git",
+            gitUrl            : "https://github.com/HttpRequester/Requester.git",
 
-            libraryVersion    : "1.0.1",
+            libraryVersion    : "1.0.3",
 
             developerId       : "babakpadashi",
             developerName     : "Babak Padashi",
@@ -56,10 +56,15 @@ ext {
 }
 
 /*
+git remote set-url origin https://github.com/HttpRequester/Requester.git
+
 git init
-git remote add origin https://github.com/babakpadashi/Requester.git
+git remote add origin https://github.com/HttpRequester/Requester.git
 git add requester
 git commit -m "first commit"
 git pull origin master
 git push origin master
+
+gradlew install
+gradlew bintrayUpload
  */
