@@ -14,137 +14,185 @@ import ir.bpadashi.requester.threadpool.ConnectionThreadSingle;
 
 public class Requester {
 
-	Queue<RequesterRunnable> queue = new ConcurrentLinkedQueue<RequesterRunnable>();
+    Queue<RequesterRunnable> queue = new ConcurrentLinkedQueue<RequesterRunnable>();
 
-	private Context context;
-	private Fragment fragment;
-	private boolean isFragment;
+    RequesterBuilder builder;
 
-	private String url;
-	private String method_WSDL;
-	private Class typeClass;
-	private IRequestHandler aRequestHandler;
-	private List<Params> paramList;
-	private Method aMethod;
-	private boolean isPlainText = true;
+    public Requester(RequesterBuilder builder) {
 
-	public Requester(RequesterBuilder builder) {
+        this.builder = builder;
 
-        this.fragment = builder.fragment;
-        this.context = builder.context;
-        this.isFragment = builder.isFragment;
-        
-        this.url = builder.url;
-        this.method_WSDL = builder.method_WSDL;
-        this.typeClass = builder.typeClass;
-        this.isPlainText = builder.isPlainText;
-        this.aRequestHandler = builder.aRequestHandler;
-        this.paramList=builder.paramList;
-        this.aMethod = builder.aMethod;
-        
     }
 
-	public void executeSync() {
+    public void executeSync() {
 
-		if (isFragment)
-			queue.add(new RequesterRunnable(fragment, isFragment, url, typeClass, aRequestHandler, paramList, isPlainText,
-					method_WSDL, aMethod));
-		else
-			queue.add(new RequesterRunnable(context, isFragment, url, typeClass, aRequestHandler, paramList, isPlainText,
-					method_WSDL, aMethod));
+        queue.add(new RequesterRunnable(builder));
 
-		while (queue.size() > 0) {
-			ConnectionThreadSingle.getInstance().AddTask(queue.poll());
-		}
+        while (queue.size() > 0) {
+            ConnectionThreadSingle.getInstance().AddTask(queue.poll());
+        }
 
-	}
+    }
 
-	public void executeAnSync() {
+    public void executeAnSync() {
 
-		if (isFragment)
-			queue.add(new RequesterRunnable(fragment, isFragment, url, typeClass, aRequestHandler, paramList, isPlainText,
-					method_WSDL, aMethod));
-		else
-			queue.add(new RequesterRunnable(context, isFragment, url, typeClass, aRequestHandler, paramList, isPlainText,
-					method_WSDL, aMethod));
+        queue.add(new RequesterRunnable(builder));
 
-		while (queue.size() > 0) {
-			ConnectionThreadPool.getInstance().AddTask(queue.poll());
-		}
+        while (queue.size() > 0) {
+            ConnectionThreadPool.getInstance().AddTask(queue.poll());
+        }
 
-	}
+    }
 
-	public static class RequesterBuilder {
+    public static class RequesterBuilder {
 
-		Queue<RequesterRunnable> queue = new ConcurrentLinkedQueue<RequesterRunnable>();
+        Queue<RequesterRunnable> queue = new ConcurrentLinkedQueue<RequesterRunnable>();
 
-		private Context context;
-		private Fragment fragment;
-		private boolean isFragment;
+        private Context context;
+        private Fragment fragment;
+        private boolean isFragment;
 
-		private String url;
-		private String method_WSDL;
-		private Class typeClass;
-		private IRequestHandler aRequestHandler;
-		private List<Params> paramList;
-		private Method aMethod;
-		private boolean isPlainText;
-		
+        private String url;
 
-		public RequesterBuilder(Context context) {
-			this.context = context;
-		}
+        private String SoapAction;
+        private String MethodName;
+        private String Namespace;
 
-		public RequesterBuilder(Fragment fragment) {
+        private Class typeClass;
+        private IRequestHandler aRequestHandler;
+        private List<Params> paramList;
+        private Method aMethod;
+        private boolean isPlainText;
 
-			this.fragment = fragment;
-			this.context = fragment.getActivity();
-			this.isFragment = true;
-		}
+        //Getter
 
-		public RequesterBuilder setUrl(final String url) {
-			this.url = url;
-			return this;
-		}
+        public Context getContext(){
+            return context ;
+        }
 
-		public RequesterBuilder setWsdlMethod(final String method_WSDL) {
-			this.method_WSDL = method_WSDL;
-			return this;
-		}
+        public Fragment getFragment(){
+            return fragment;
+        }
 
-		public RequesterBuilder setModel(final Class typeClass) {
-			this.typeClass = typeClass;
-			return this;
-		}
 
-		public RequesterBuilder responseIsPlainText() {
-			this.isPlainText = true;
-			return this;
-		}
+        public boolean isFragment(){
+            return isFragment;
+        }
 
-		public RequesterBuilder addRequestHandler(final IRequestHandler aRequestHandler) {
-			this.aRequestHandler = aRequestHandler;
-			return this;
-		}
 
-		public RequesterBuilder addParam(final String key, Object value) {
+        public String getUrl(){
+            return url;
+        }
 
-			if (this.paramList == null)
-				this.paramList = new ArrayList<>();
 
-			this.paramList.add(new Params(key, value));
-			return this;
-		}
+        public String getSoapAction(){
+            return SoapAction ;
+        }
 
-		public RequesterBuilder setMethod(Method aMethod) {
-			this.aMethod = aMethod;
-			return this;
-		}
 
-		public Requester build() {
-			return new Requester(this);
-		}
+        public String getMethodName(){
+            return MethodName ;
+        }
 
-	}
+
+        public String getNamespace(){
+            return Namespace ;
+        }
+
+
+        public Class getTypeClass(){
+            return typeClass;
+        }
+
+
+        public IRequestHandler getIRequestHandler(){
+            return aRequestHandler ;
+        }
+
+
+        public Method getMethod(){
+            return aMethod;
+        }
+
+
+        public boolean isPlainText(){
+            return isPlainText ;
+        }
+
+
+        public List<Params> getParamList(){
+            return paramList ;
+        }
+
+
+
+        //Setter
+
+        public RequesterBuilder(Context context) {
+            this.context = context;
+        }
+
+        public RequesterBuilder(Fragment fragment) {
+
+            this.fragment = fragment;
+            this.context = fragment.getActivity();
+            this.isFragment = true;
+        }
+
+        public RequesterBuilder setUrl(final String url) {
+            this.url = url;
+            return this;
+        }
+
+        public RequesterBuilder setSoapAction(final String SoapAction) {
+            this.SoapAction = SoapAction;
+            return this;
+        }
+
+        public RequesterBuilder setMethodName(final String MethodName) {
+            this.MethodName = MethodName;
+            return this;
+        }
+
+        public RequesterBuilder setNamespace(final String Namespace) {
+            this.Namespace = Namespace;
+            return this;
+        }
+
+
+        public RequesterBuilder setModel(final Class typeClass) {
+            this.typeClass = typeClass;
+            return this;
+        }
+
+        public RequesterBuilder dontCache() {
+            this.isPlainText = true;
+            return this;
+        }
+
+        public RequesterBuilder addRequestHandler(final IRequestHandler aRequestHandler) {
+            this.aRequestHandler = aRequestHandler;
+            return this;
+        }
+
+        public RequesterBuilder addParam(final String key, Object value) {
+
+            if (this.paramList == null)
+                this.paramList = new ArrayList<>();
+
+            this.paramList.add(new Params(key, value));
+            return this;
+        }
+
+        public RequesterBuilder setMethod(Method aMethod) {
+            this.aMethod = aMethod;
+            return this;
+        }
+
+        public Requester build() {
+            return new Requester(this);
+        }
+
+    }
 
 }

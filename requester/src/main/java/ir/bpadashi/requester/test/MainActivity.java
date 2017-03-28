@@ -2,62 +2,66 @@ package ir.bpadashi.requester.test;
 
 import android.app.Activity;
 import android.os.Bundle;
+
 import ir.bpadashi.requester.IRequestHandler;
 import ir.bpadashi.requester.Method;
 import ir.bpadashi.requester.Requester;
 
 public class MainActivity extends Activity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		 Requester aRequester = new Requester.RequesterBuilder(this)
-		.setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
-        .setWsdlMethod("GetCompanyInfo")
-        .addParam("companyId", 20)
-		.setModel(Company.class)
-		.setMethod(Method.SOAP)
-		.addRequestHandler(new IRequestHandler() {
+        Requester aRequester = new Requester.RequesterBuilder(this)
 
-			@Override
-			public void onStart() {
-				// TODO Auto-generated method stub
-				
-			}
+                .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
+                .setMethodName("GetCompanyInfo")
+                .setNamespace("http://tempuri.org/")
+                .setSoapAction("http://tempuri.org/GetCompanyInfo")
 
-			@Override
-			public void onCache(Object context, Object model) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onResponse(Object context, StringBuilder response) {
+                .addParam("companyId", 20)
+                .setMethod(Method.SOAP)
+                .addRequestHandler(new IRequestHandler() {
 
 
-				System.out.println(response);
-				
-			}
+                    @Override
+                    public void onStart() {
+                        // TODO Auto-generated method stub
 
-			@Override
-			public void onSuccess(Object context, Object model, boolean hasCache) {
-				// TODO Auto-generated method stub
-				
-			}
+                    }
 
-			@Override
-			public void onError(Object context, Exception exception, String exceptionFarsi) {
-				// TODO Auto-generated method stub
-				
-			}
+                    @Override
+                    public void onCache(Object context, Object model) {
+                        // TODO Auto-generated method stub
 
+                    }
+
+                    @Override
+                    public void onResponse(Object context, StringBuilder response) {
 
 
-		}).build();
-		 
-		 aRequester.executeAnSync();
-	}
+                        System.out.println(response);
+
+                    }
+
+                    @Override
+                    public void onSuccess(Object context, Object model, boolean hasCache) {
+                        // TODO Auto-generated method stub
+
+                    }
+
+                    @Override
+                    public void onError(Object context, Exception exception, String exceptionFarsi) {
+                        // TODO Auto-generated method stub
+
+                    }
+
+
+                }).build();
+
+        aRequester.executeAnSync();
+    }
 
 }

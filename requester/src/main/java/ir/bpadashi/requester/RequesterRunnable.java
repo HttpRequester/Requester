@@ -36,382 +36,391 @@ import ir.bpadashi.requester.util.TextUtil;
 
 public class RequesterRunnable implements Runnable {
 
-	private Context context;
-	private Fragment fragment;
-	private boolean isFragment;
-	private IRequestHandler aRequestHandler;
-	private String url;
-	private Class typeClass;
-	private List<Params> paramList;
-	private String method_WSDL;
-	private Method aMethod;
-	private boolean isPlainText;
+    private Context context;
+    private Fragment fragment;
+    private boolean isFragment;
+    private IRequestHandler aRequestHandler;
+    private String url;
+    private Class typeClass;
+    private List<Params> paramList;
+    public String SoapAction;
+    public String MethodName;
+    public String Namespace;
+    private Method aMethod;
+    private boolean isPlainText;
 
-	public RequesterRunnable(Context context, boolean isFragment, String url, Class typeClass,
-			IRequestHandler aRequestHandler, List<Params> paramList, boolean isPlainText, String method_WSDL,
-			Method aMethod) {
 
-		this.context = context;
+    public RequesterRunnable(Requester.RequesterBuilder requester) {
 
-		this.aRequestHandler = aRequestHandler;
-		this.url = url;
-		this.typeClass =  typeClass;
-		this.paramList = paramList;
-		this.isPlainText = isPlainText;
-		this.method_WSDL = method_WSDL;
-		this.aMethod = aMethod;
+        this.context = requester.getContext();
+        this.fragment = requester.getFragment();
 
-	}
+        if (fragment != null)
+            this.context = fragment.getActivity();
 
-	public RequesterRunnable(Fragment fragment, boolean isFragment, String url, Class typeClass,
-			IRequestHandler aRequestHandler, List<Params> paramList, boolean isPlainText, String method_WSDL,
-			Method aMethod) {
+        this.aRequestHandler = requester.getIRequestHandler();
+        this.url = requester.getUrl();
+        this.typeClass = requester.getTypeClass();
+        this.paramList = requester.getParamList();
+        this.isPlainText = requester.isPlainText();
+        this.SoapAction = requester.getSoapAction();
+        this.MethodName = requester.getMethodName();
+        this.Namespace = requester.getNamespace();
+        this.aMethod = requester.getMethod();
+    }
 
-		this.fragment = fragment;
-		this.context = fragment.getActivity();
-		this.isFragment = true;
 
-		this.aRequestHandler = aRequestHandler;
-		this.url = url;
-		this.typeClass = typeClass;
-		this.paramList = paramList;
-		this.isPlainText = isPlainText;
-		this.method_WSDL = method_WSDL;
-		this.aMethod = aMethod;
+    public void onErrorUi(final IRequestHandler aRequestHandler, final Exception exception,
+                          final String exceptionFarsi) {
 
-	}
+        if (this.isFragment) {
+            onErrorFragment(aRequestHandler, exception, exceptionFarsi);
+            return;
+        } else if (context == null)
+            return;
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                aRequestHandler.onError(context, exception, exceptionFarsi);
+            }
+        });
+    }
 
-	public void onErrorUi(final IRequestHandler aRequestHandler, final Exception exception,
-			final String exceptionFarsi) {
+    public void onResponseUi(final IRequestHandler aRequestHandler, final StringBuilder json) {
 
-		if (this.isFragment) {
-			onErrorFragment(aRequestHandler, exception, exceptionFarsi);
-			return;
-		} else if (context == null)
-			return;
-		((Activity) context).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				aRequestHandler.onError(context, exception, exceptionFarsi);
-			}
-		});
-	}
+        if (this.isFragment) {
+            onResponseFragment(aRequestHandler, json);
+            return;
+        } else if (context == null)
+            return;
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                aRequestHandler.onResponse(context, json);
+            }
+        });
+    }
 
-	public void onResponseUi(final IRequestHandler aRequestHandler, final StringBuilder json) {
+    public void onCacheUi(final IRequestHandler aRequestHandler, final Object model) {
 
-		if (this.isFragment) {
-			onResponseFragment(aRequestHandler, json);
-			return;
-		} else if (context == null)
-			return;
-		((Activity) context).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				aRequestHandler.onResponse(context, json);
-			}
-		});
-	}
+        if (this.isFragment) {
+            onCacheFragment(aRequestHandler, model);
+            return;
+        } else if (context == null)
+            return;
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                aRequestHandler.onCache(context, model);
+            }
+        });
+    }
 
-	public void onCacheUi(final IRequestHandler aRequestHandler, final Object model) {
+    public void onSuccessUi(final IRequestHandler aRequestHandler, final Object model, final boolean hasCache) {
 
-		if (this.isFragment) {
-			onCacheFragment(aRequestHandler, model);
-			return;
-		} else if (context == null)
-			return;
-		((Activity) context).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				aRequestHandler.onCache(context, model);
-			}
-		});
-	}
+        if (this.isFragment) {
+            onSuccessFragment(aRequestHandler, model, hasCache);
+            return;
+        } else if (context == null)
+            return;
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                aRequestHandler.onSuccess(context, model, hasCache);
+            }
+        });
+    }
 
-	public void onSuccessUi(final IRequestHandler aRequestHandler, final Object model, final boolean hasCache) {
+    public void onErrorFragment(final IRequestHandler aRequestHandler, final Exception exception,
+                                final String exceptionFarsi) {
+        if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
+            return;
+        ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                aRequestHandler.onError(fragment, exception, exceptionFarsi);
+            }
+        });
+    }
 
-		if (this.isFragment) {
-			onSuccessFragment(aRequestHandler, model, hasCache);
-			return;
-		} else if (context == null)
-			return;
-		((Activity) context).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				aRequestHandler.onSuccess(context, model, hasCache);
-			}
-		});
-	}
+    public void onResponseFragment(final IRequestHandler aRequestHandler, final StringBuilder json) {
+        if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
+            return;
+        ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                aRequestHandler.onResponse(fragment, json);
+            }
+        });
+    }
 
-	public void onErrorFragment(final IRequestHandler aRequestHandler, final Exception exception,
-			final String exceptionFarsi) {
-		if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
-			return;
-		((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				aRequestHandler.onError(fragment, exception, exceptionFarsi);
-			}
-		});
-	}
+    public void onCacheFragment(final IRequestHandler aRequestHandler, final Object model) {
+        if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
+            return;
+        ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                aRequestHandler.onCache(fragment, model);
+            }
+        });
+    }
 
-	public void onResponseFragment(final IRequestHandler aRequestHandler, final StringBuilder json) {
-		if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
-			return;
-		((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				aRequestHandler.onResponse(fragment, json);
-			}
-		});
-	}
+    public void onSuccessFragment(final IRequestHandler aRequestHandler, final Object model, final boolean hasCache) {
+        if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
+            return;
+        ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                aRequestHandler.onSuccess(fragment, model, hasCache);
+            }
+        });
+    }
 
-	public void onCacheFragment(final IRequestHandler aRequestHandler, final Object model) {
-		if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
-			return;
-		((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				aRequestHandler.onCache(fragment, model);
-			}
-		});
-	}
+    @Override
+    public void run() {
 
-	public void onSuccessFragment(final IRequestHandler aRequestHandler, final Object model, final boolean hasCache) {
-		if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
-			return;
-		((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				aRequestHandler.onSuccess(fragment, model, hasCache);
-			}
-		});
-	}
+        if (context == null)
+            return;
 
-	@Override
-	public void run() {
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                aRequestHandler.onStart();
+            }
+        });
 
-		if (context == null)
-			return;
-
-		((Activity) context).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				aRequestHandler.onStart();
-			}
-		});
-
-		boolean hasCache = true;
-		try {
-			Object obj = new Serialize().readFromFile(context, getRequestId(url));
-			if (obj != null) {
-				hasCache = true;
-				onCacheUi(aRequestHandler, obj);
-			}
-		} catch (NoSuchAlgorithmException e) {
-			onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
-			e.printStackTrace();
-		}
+        boolean hasCache = true;
+        try {
+            Object obj = new Serialize().readFromFile(context, getRequestId(url));
+            if (obj != null) {
+                hasCache = true;
+                onCacheUi(aRequestHandler, obj);
+            }
+        } catch (NoSuchAlgorithmException e) {
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
+            e.printStackTrace();
+        }
 
 		/*
-		 * try { Thread.sleep(5000); } catch (InterruptedException e1) { // TODO
+         * try { Thread.sleep(5000); } catch (InterruptedException e1) { // TODO
 		 * Auto-generated catch block e1.printStackTrace(); }
 		 */
 
-		NetworkUtil aNetworkUtil = new NetworkUtil(context);
-		if (!aNetworkUtil.getConnectivityStatus()) {
-			onErrorUi(aRequestHandler, new Exception("no internet connection"), TextUtil.NO_INTERNET);
-			System.out.println(TextUtil.NO_INTERNET);
-			return;
+        NetworkUtil aNetworkUtil = new NetworkUtil(context);
+        if (!aNetworkUtil.getConnectivityStatus()) {
+            onErrorUi(aRequestHandler, new Exception("no internet connection"), TextUtil.NO_INTERNET);
+            System.out.println(TextUtil.NO_INTERNET);
+            return;
 
-		}
+        }
 
-		StringBuilder str = null;
-		try {
-			switch (aMethod) {
-			case GET:
-				str = getRequestGet(url);
-				break;
-			case POST:
-				str = getRequestPost(url);
-				break;
-			case SOAP:
-				str = getRequestWsdl(url);
-				break;
-			default:
-				str = getRequestGet(url);
-			}
-		} catch (IOException e) {
-			onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
-			e.printStackTrace();
-		} catch (XmlPullParserException e) {
-			onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
-			e.printStackTrace();
-		}
-		onResponseUi(aRequestHandler, str);
+        StringBuilder str = null;
+        try {
+            switch (aMethod) {
+                case GET:
+                    str = getRequestGet(url);
+                    break;
+                case POST:
+                    str = getRequestPost(url);
+                    break;
+                case SOAP:
+                    str = getRequestWsdl(url);
+                    break;
+                default:
+                    str = getRequestGet(url);
+            }
+        } catch (IOException e) {
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
+            e.printStackTrace();
+        } catch (XmlPullParserException e) {
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
+            e.printStackTrace();
+        }
+        onResponseUi(aRequestHandler, str);
 
-		Object obj = null;
+        Object obj = null;
 
-		if (isPlainText) {
-			obj = str;
-			onSuccessUi(aRequestHandler, str, hasCache);
-		} else {
+        if (isPlainText) {
+            obj = str;
+            onSuccessUi(aRequestHandler, str, hasCache);
+        } else {
 
-			Mapper mapper = new Mapper();
-			try {
-				obj = mapper.map(str, typeClass);
-				onSuccessUi(aRequestHandler, obj, hasCache);
-			} catch (JSONException e) {
-				onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
-				e.printStackTrace();
-			} catch (Exception e) {
-				onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
-				e.printStackTrace();
-			}
-		}
+            Mapper mapper = new Mapper();
+            try {
+                obj = mapper.map(str, typeClass);
+                onSuccessUi(aRequestHandler, obj, hasCache);
+            } catch (JSONException e) {
+                onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
+                e.printStackTrace();
+            } catch (Exception e) {
+                onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
+                e.printStackTrace();
+            }
+        }
 
-		try {
-			new Serialize().saveToFile(context, obj, getRequestId(url));
-		} catch (NoSuchAlgorithmException e) {
-			onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
-			e.printStackTrace();
-		}
+        try {
+            new Serialize().saveToFile(context, obj, getRequestId(url));
+        } catch (NoSuchAlgorithmException e) {
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
+            e.printStackTrace();
+        }
 
-	}
+    }
 
-	private StringBuilder getRequestGet(String urlString) throws IOException {
+    private StringBuilder getRequestGet(String urlString) throws IOException {
 
-		StringBuilder postData = new StringBuilder();
+        StringBuilder postData = new StringBuilder();
 
-		if (paramList != null)
-			for (Params param : paramList) {
-				if (postData.length() != 0)
-					postData.append('&');
-				postData.append(URLEncoder.encode(param.key, "UTF-8"));
-				postData.append('=');
-				postData.append(URLEncoder.encode(String.valueOf(param.value), "UTF-8"));
-			}
+        if (paramList != null)
+            for (Params param : paramList) {
+                if (postData.length() != 0)
+                    postData.append('&');
+                postData.append(URLEncoder.encode(param.key, "UTF-8"));
+                postData.append('=');
+                postData.append(URLEncoder.encode(String.valueOf(param.value), "UTF-8"));
+            }
 
-		URL url = new URL(urlString + "?" + postData);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        URL url = new URL(urlString + "?" + postData);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-		conn.setRequestMethod("GET");
-		conn.setConnectTimeout(30000);
-		conn.setReadTimeout(30000);
+        conn.setRequestMethod("GET");
+        conn.setConnectTimeout(30000);
+        conn.setReadTimeout(30000);
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		String inputLine;
-		StringBuilder response = new StringBuilder();
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
 
-		if (conn.getResponseCode() != 200){
-			onErrorUi(aRequestHandler, new Exception(TextUtil.ERROR_ON_RESPONSE_CODE), TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
-			return response;
-		}
+        if (conn.getResponseCode() != 200) {
+            onErrorUi(aRequestHandler, new Exception(TextUtil.ERROR_ON_RESPONSE_CODE), TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
+            return response;
+        }
 
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
-		}
-		in.close();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
 
-		return response;
-	}
+        return response;
+    }
 
-	private StringBuilder getRequestPost(String urlString) throws IOException {
+    private StringBuilder getRequestPost(String urlString) throws IOException {
 
-		URL url = new URL(urlString);
+        URL url = new URL(urlString);
 
-		StringBuilder postData = new StringBuilder();
+        StringBuilder postData = new StringBuilder();
 
-		if (paramList != null)
-			for (Params param : paramList) {
-				if (postData.length() != 0)
-					postData.append('&');
-				postData.append(URLEncoder.encode(param.key, "UTF-8"));
-				postData.append('=');
-				postData.append(URLEncoder.encode(String.valueOf(param.value), "UTF-8"));
-			}
+        if (paramList != null)
+            for (Params param : paramList) {
+                if (postData.length() != 0)
+                    postData.append('&');
+                postData.append(URLEncoder.encode(param.key, "UTF-8"));
+                postData.append('=');
+                postData.append(URLEncoder.encode(String.valueOf(param.value), "UTF-8"));
+            }
 
-		byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+        byte[] postDataBytes = postData.toString().getBytes("UTF-8");
 
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("POST");
-		conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-		conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
-		conn.setDoOutput(true);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+        conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+        conn.setDoOutput(true);
 
-		conn.setConnectTimeout(30000);
-		conn.setReadTimeout(30000);
+        conn.setConnectTimeout(30000);
+        conn.setReadTimeout(30000);
 
-		conn.getOutputStream().write(postDataBytes);
+        conn.getOutputStream().write(postDataBytes);
 
-		Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+        Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
 
-		StringBuilder response = new StringBuilder();
-		
-		if (conn.getResponseCode() != 200){
-			onErrorUi(aRequestHandler, new Exception(TextUtil.ERROR_ON_RESPONSE_CODE), TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
-			return response;
-		}
-		
-		for (int c; (c = in.read()) >= 0;)
-			response.append((char) c);
-		return response;
+        StringBuilder response = new StringBuilder();
 
-	}
+        if (conn.getResponseCode() != 200) {
+            onErrorUi(aRequestHandler, new Exception(TextUtil.ERROR_ON_RESPONSE_CODE), TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
+            return response;
+        }
 
-	private StringBuilder getRequestWsdl(String urlString) throws IOException, XmlPullParserException {
+        for (int c; (c = in.read()) >= 0; )
+            response.append((char) c);
+        return response;
 
-		String SOAP_ACTION = "http://tempuri.org/" + method_WSDL;
-		String METHOD_NAME = method_WSDL;
-		String NAMESPACE = "http://tempuri.org/";
-		String URL = urlString;
+    }
 
-		SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
+    private StringBuilder getRequestWsdl(String urlString) throws IOException, XmlPullParserException {
 
-		if (paramList != null)
-			for (Params param : paramList) {
-				request.addProperty(param.key, param.value);
-			}
+        String SOAP_ACTION = SoapAction;
+        String METHOD_NAME = MethodName;
+        String NAMESPACE = Namespace;
+        String URL = urlString;
 
-		SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-		envelope.dotNet = true;
-		envelope.setOutputSoapObject(request);
+        SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
 
-		HttpTransportSE ht = new HttpTransportSE(URL);
+        if (paramList != null)
+            for (Params param : paramList) {
+                request.addProperty(param.key, param.value);
+            }
 
-		SoapPrimitive response = null;
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+        envelope.dotNet = true;
+        envelope.setOutputSoapObject(request);
 
-		ht.call(SOAP_ACTION, envelope);
+        HttpTransportSE ht = new HttpTransportSE(URL);
 
-		response = (SoapPrimitive) envelope.getResponse();
+        Object response = null;
 
-		StringBuilder aStringBuilder = new StringBuilder();
-		aStringBuilder.append(response);
+        ht.call(SOAP_ACTION, envelope);
 
-		return aStringBuilder;
+        response = (SoapPrimitive) envelope.getResponse();
 
-	}
+        StringBuilder aStringBuilder = new StringBuilder();
+        aStringBuilder.append(response);
 
-	private String getRequestId(String url) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        return aStringBuilder;
 
-		StringBuilder aStringBuilder = new StringBuilder();
+    }
 
-		aStringBuilder.append(url);
+    private String getRequestId(String url) throws NoSuchAlgorithmException, UnsupportedEncodingException {
 
-		if (paramList != null)
-			for (Params param : paramList) {
-				aStringBuilder.append(param.key);
-				aStringBuilder.append(param.value.toString());
-			}
+        StringBuilder aStringBuilder = new StringBuilder();
 
-		MessageDigest md = MessageDigest.getInstance("SHA-256");
-		md.update(aStringBuilder.toString().getBytes("UTF-8"));
-		return new BigInteger(1, md.digest()).toString(16);
-	}
+        aStringBuilder.append(url);
+
+        if (paramList != null)
+            for (Params param : paramList) {
+                aStringBuilder.append(param.key);
+                aStringBuilder.append(param.value.toString());
+            }
+
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(aStringBuilder.toString().getBytes("UTF-8"));
+        return new BigInteger(1, md.digest()).toString(16);
+    }
+
+	/*private static void ScanSoapObject(SoapObject result)
+{
+    for(int i=0;i<result.getPropertyCount();i++)
+    {
+        if(result.getProperty(i) instanceof SoapObject)
+        {
+             ScanSoapObject((SoapObject)result.getProperty(i));
+        }
+        else
+        {
+            //do something with the current property
+
+            //get the current property name:
+            PropertyInfo pi = new PropertyInfo();
+            result.getPropertyInfo(i,pi);
+            String name = pi.getName();
+        }
+    }
+}*/
 
 }
