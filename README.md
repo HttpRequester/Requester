@@ -2,10 +2,14 @@ Requester
 ======
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 An HTTP & HTTP/2 client for Android . include SOAP WSDL,Web Api webservices And json mapper
 =======
 An HTTP & HTTP/2 client for Android . include SOAP,WebApi webservices And json mapper
 >>>>>>> 5baf1c5b678b6101edf96800dd524a5424daae5f
+=======
+An HTTP & HTTP/2 client for Android . include SOAP,WebApi webservices And json mapper
+>>>>>>> 0990c06836badec81df49a08442c2aa1e53d710f
 
 
 Download
@@ -25,10 +29,14 @@ or Gradle:
 ```groovy
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 compile 'ir.bpadashi.requester:requester:1.0.1'
 =======
 compile 'ir.bpadashi.requester:requester:1.0.3'
 >>>>>>> 5baf1c5b678b6101edf96800dd524a5424daae5f
+=======
+compile 'ir.bpadashi.requester:requester:1.0.3'
+>>>>>>> 0990c06836badec81df49a08442c2aa1e53d710f
 ```
 Add to build.gradle of your app:
 ```groovy
@@ -150,6 +158,7 @@ Requester aRequester = new Requester.RequesterBuilder(this)
 
                 }).build();
 
+<<<<<<< HEAD
         aRequester.executeAnSync();
 <<<<<<< HEAD
         
@@ -162,6 +171,12 @@ Create class Model for Json Mapping
 ```java
 
 >>>>>>> 5baf1c5b678b6101edf96800dd524a5424daae5f
+=======
+        aRequester.executeAnSync();        
+```
+Create class for json mapping
+```java
+>>>>>>> 0990c06836badec81df49a08442c2aa1e53d710f
    class Model implements Serializable {
    
         public int statusCode;
