@@ -38,57 +38,55 @@ SOAP webservice sample
 
 
 Requester aRequester = new Requester.RequesterBuilder(this)
-    .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
-    .setWsdlMethod("GetCompanyInfo")
-    .addParam("companyId", 20)
-    .setModel(Company.class)
-    .setMethod(Method.SOAP)
-    .addRequestHandler(new IRequestHandler() {
 
-      @Override
-      public void onStart() {
-        // TODO Auto-generated method stub
-        
-      }
+                .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
+                .setMethodName("GetProducts")
+                .setNamespace("http://tempuri.org/")
+                .setSoapAction("http://tempuri.org/GetProducts")
 
-      @Override
-      public void onCache(Object context, Object model) {
-        // TODO Auto-generated method stub
-        
-        Company aComany=(Company)model;
-        System.out.println(aCompany.name);
-        
-      }
+                .dontCache()
 
-      @Override
-      public void onResponse(Object context, StringBuilder response) {
-       
-        System.out.println(response);
-      
-      }
+                .addParam("companyId", 20)
+                .setMethod(Method.SOAP)
+                .addRequestHandler(new IRequestHandler() {
 
-      @Override
-      public void onSuccess(Object context, Object model, boolean hasCache) {
-        // TODO Auto-generated method stub
-        
-        Company aComany=(Company)model;
-        System.out.println(aCompany.name);
-        
-        
-      }
+                    @Override
+                    public void onStart() {
+                        // TODO Auto-generated method stub
 
-      @Override
-      public void onError(Object context, Exception exception, String exceptionFarsi) {
-        // TODO Auto-generated method stub
-        
-      }
+                    }
+
+                    @Override
+                    public void onCache(Object context, Object model) {
+                        // TODO Auto-generated method stub
+
+                    }
+
+                    @Override
+                    public void onResponse(Object context, Object response) {
 
 
+                    }
 
-    }).build();
-     
-     aRequester.executeAnSync();
-  }
+                    @Override
+                    public void onSuccess(Object context, Object model, boolean hasCache) {
+
+                        SoapObject soapObject=(SoapObject)model;
+                        System.out.println(soapObject.getPropertyCount());
+
+
+                    }
+
+                    @Override
+                    public void onError(Object context, Exception exception, String exceptionFarsi) {
+                        // TODO Auto-generated method stub
+
+                    }
+
+
+                }).build();
+
+        aRequester.executeAnSync();
 ```
 
 Web Api webservice sample
