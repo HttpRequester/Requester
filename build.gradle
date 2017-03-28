@@ -32,18 +32,18 @@ task clean(type: Delete) {
 ext {
     bintray = [
             bintrayRepo       : "maven",
-            bintrayName       : "requester",
+            bintrayName       : "Requester",
 
             publishedGroupId  : "ir.bpadashi.requester",
             libraryName       : "Requester",
             artifact          : "requester",
 
-            libraryDescription: "for get data and json from GET POST SOAP WSDL webservice and cast to model",
+            libraryDescription: "Client for Android for SOAP WebApi webservices with json mapper",
 
             siteUrl           : "https://github.com/HttpRequester/Requester.git",
             gitUrl            : "https://github.com/HttpRequester/Requester.git",
 
-            libraryVersion    : "1.0.3",
+            libraryVersion    : "1.0.4",
 
             developerId       : "babakpadashi",
             developerName     : "Babak Padashi",
@@ -60,7 +60,7 @@ git remote set-url origin https://github.com/HttpRequester/Requester.git
 
 git init
 git remote add origin https://github.com/HttpRequester/Requester.git
-git add requester
+git add .
 git commit -m "first commit"
 git pull origin master
 git push origin master
