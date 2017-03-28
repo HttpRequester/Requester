@@ -1,16 +1,7 @@
-<<<<<<< HEAD
 Requester
 ======
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-An HTTP & HTTP/2 client for Android . include SOAP WSDL,Web Api webservices And json mapper
-=======
 An HTTP & HTTP/2 client for Android . include SOAP,WebApi webservices And json mapper
->>>>>>> 5baf1c5b678b6101edf96800dd524a5424daae5f
-=======
-An HTTP & HTTP/2 client for Android . include SOAP,WebApi webservices And json mapper
->>>>>>> 0990c06836badec81df49a08442c2aa1e53d710f
 
 
 Download
@@ -22,28 +13,19 @@ Download [the latest aar][3] or grab via Maven:
 <dependency>
   <groupId>ir.bpadashi.requester</groupId>
   <artifactId>requester</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.4</version>
   <type>pom</type>
 </dependency>
 ```
 or Gradle:
 ```groovy
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-compile 'ir.bpadashi.requester:requester:1.0.1'
-=======
-compile 'ir.bpadashi.requester:requester:1.0.3'
->>>>>>> 5baf1c5b678b6101edf96800dd524a5424daae5f
-=======
-compile 'ir.bpadashi.requester:requester:1.0.3'
->>>>>>> 0990c06836badec81df49a08442c2aa1e53d710f
+compile 'ir.bpadashi.requester:requester:1.0.4'
 ```
 Add to build.gradle of your app:
 ```groovy
 
 repositories {
-    maven { url  "https://dl.bintray.com/repobpadashi/maven/" }
+    maven { url  "https://dl.bintray.com/httprequester/maven" }
     maven { url 'https://oss.sonatype.org/content/repositories/ksoap2-android-releases' }
 
 }
@@ -159,25 +141,27 @@ Requester aRequester = new Requester.RequesterBuilder(this)
 
                 }).build();
 
-<<<<<<< HEAD
         aRequester.executeAnSync();
-<<<<<<< HEAD
         
         
-=======
+   class Model implements Serializable {
+   
+        public int statusCode;
+        public String statusDes;
 
+        public int getStatusCode() {
+            return statusCode;
+        }
+
+        public String getStatusDes() {
+            return statusDes;
+        }
+
+    }
 ```
 
-Create class Model for Json Mapping
-```java
-
->>>>>>> 5baf1c5b678b6101edf96800dd524a5424daae5f
-=======
-        aRequester.executeAnSync();        
-```
-Create class for json mapping
-```java
->>>>>>> 0990c06836badec81df49a08442c2aa1e53d710f
+Create Model class for json mapping
+```java    
    class Model implements Serializable {
    
         public int statusCode;
@@ -216,7 +200,3 @@ License
  [3]: https://dl.bintray.com/repobpadashi/maven/ir/bpadashi/requester/requester/1.0.1/requester-1.0.1.aar
  [4]: https://search.maven.org/remote_content?g=com.squareup.okhttp3&a=mockwebserver&v=LATEST
  [snap]: https://oss.sonatype.org/content/repositories/snapshots/
-=======
-# Requester
-Client for Android for SOAP WebApi webservices with json mapper
->>>>>>> fd30a6f10f5e716a3522f3b852a0c35e1560a7de
