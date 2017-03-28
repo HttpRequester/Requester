@@ -142,22 +142,6 @@ Requester aRequester = new Requester.RequesterBuilder(this)
                 }).build();
 
         aRequester.executeAnSync();
-        
-        
-   class Model implements Serializable {
-   
-        public int statusCode;
-        public String statusDes;
-
-        public int getStatusCode() {
-            return statusCode;
-        }
-
-        public String getStatusDes() {
-            return statusDes;
-        }
-
-    }
 ```
 
 Create Model class for json mapping
