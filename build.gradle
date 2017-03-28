@@ -34,14 +34,14 @@ ext {
             bintrayRepo       : "maven",
             bintrayName       : "requester",
 
-            publishedGroupId  : "ir.bpadashi",
+            publishedGroupId  : "ir.bpadashi.requester",
             libraryName       : "Requester",
             artifact          : "requester",
 
             libraryDescription: "for get data and json from GET POST SOAP WSDL webservice and cast to model",
 
-            siteUrl           : "https://github.com/bpadashi/Requester.git",
-            gitUrl            : "https://github.com/bpadashi/Requester.git",
+            siteUrl           : "https://github.com/babakpadashi/Requester.git",
+            gitUrl            : "https://github.com/babakpadashi/Requester.git",
 
             libraryVersion    : "1.0.1",
 
@@ -58,7 +58,8 @@ ext {
 /*
 git init
 git remote add origin https://github.com/babakpadashi/Requester.git
-git add .
+git add requester
 git commit -m "first commit"
-git push -u origin master
+git pull origin master
+git push origin master
  */

@@ -16,10 +16,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Requester aRequester = new Requester.RequesterBuilder(this)
+
                 .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
-                .setWsdlMethod("GetCompanyInfo")
+                .setMethodName("GetCompanyInfo")
+                .setNamespace("http://tempuri.org/")
+                .setSoapAction("http://tempuri.org/GetCompanyInfo")
+
+                .dontCache()
+
                 .addParam("companyId", 20)
-                .setModel(Company.class)
                 .setMethod(Method.SOAP)
                 .addRequestHandler(new IRequestHandler() {
 
@@ -54,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
                         // TODO Auto-generated method stub
 
                     }
-
 
 
                 }).build();
