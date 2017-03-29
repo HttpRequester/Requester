@@ -60,7 +60,7 @@ SOAP webservice sample
 
                     @Override
                     public void onStart() {
-                        // TODO Auto-generated method stub
+                         // Setup your preloader here!!!
 
                     }
 
@@ -72,7 +72,9 @@ SOAP webservice sample
 
                     @Override
                     public void onResponse(ParentContext context, ResponseString response) {
-
+                    
+                          System.out.println(responseString.getResponse());
+                          
                     }
 
                     @Override
