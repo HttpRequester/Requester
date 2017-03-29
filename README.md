@@ -99,7 +99,7 @@ SOAP webservice sample
         aRequester.executeAnSync();
 ```
 
-Create Model class for XML mapping
+Create Model class for XML mapping .
 For more info about create XML mapping model  refer http://simple.sourceforge.net/
 ```java    
 @Root(name = "soap:Envelope", strict = false)
