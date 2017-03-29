@@ -13,13 +13,13 @@ Download [the latest aar][3] or grab via Maven:
 <dependency>
   <groupId>ir.bpadashi.requester</groupId>
   <artifactId>requester</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
   <type>pom</type>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'ir.bpadashi.requester:requester:1.0.4'
+compile 'ir.bpadashi.requester:requester:1.0.5'
 ```
 Add to build.gradle of your app:
 ```groovy
@@ -41,9 +41,7 @@ Permission
 
 SOAP webservice sample
 ```java
-
-
-        Requester aRequester = new Requester.RequesterBuilder(this)
+       Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
                 .setMethodName("GetProducts")
@@ -52,42 +50,46 @@ SOAP webservice sample
 
                 .addParam("companyId", 20)
 
-                .setReturnType(ReturnType.SOAP_OBJECT)
+                .setModel(Model.class)
+
                 .setMethod(Method.SOAP)
-                
+                .setReturnType(ResponseType.XML)
+
+
                 .addRequestHandler(new IRequestHandler() {
 
                     @Override
                     public void onStart() {
-                        // Setup your preloader here!!!
+                        // TODO Auto-generated method stub
+
                     }
 
                     @Override
                     public void onCache(ParentContext context, Object responseObj) {
                         // TODO Auto-generated method stub
 
+
+
                     }
 
                     @Override
                     public void onResponse(ParentContext context, ResponseString response) {
 
-                        System.out.println(responseString.getResponse());
 
                     }
 
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-                        SoapObject soapObject = (SoapObject) responseObj;
-                        System.out.println(soapObject.getPropertyCount());
 
+                        Model aModel = (Model) responseObj;
+                        System.out.println(aModel.getId());
 
                     }
 
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
-                    
-                        System.out.println(exception.getMessage());
+                        // TODO Auto-generated method stub
 
                     }
 
@@ -97,20 +99,47 @@ SOAP webservice sample
         aRequester.executeAnSync();
 ```
 
+Create Model class for XML mapping
+For more info about create XML mapping model  refer http://simple.sourceforge.net/
+```java    
+@Root(name = "soap:Envelope", strict = false)
+public class Model implements Serializable {
+
+
+    static final long serialVersionUID =8740213115075839093L;
+
+    @Element(name = "id")
+    @Path("Body/GetProductsResponse/GetProductsResult/Entity")
+    private int id;
+
+    public int getId(){
+        return id;
+    }
+
+
+}
+```
+
 Web Api webservice sample
 ```java
-       Requester aRequester = new Requester.RequesterBuilder(this)
+      Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/reg")
+
                 .addParam("email","email@cc.com")
                 .addParam("password","123456")
-                .setMethod(Method.GET)
+
                 .setModel(Model.class)
+
+                .setMethod(Method.GET)
+                .setReturnType(ResponseType.JSON)
+
                 .addRequestHandler(new IRequestHandler() {
 
                     @Override
                     public void onStart() {
                         // Setup your preloader here!!!
+
                     }
 
                     @Override
@@ -139,6 +168,7 @@ Web Api webservice sample
 
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+                        // TODO Auto-generated method stub
 
                         System.out.println(exception.getMessage());
 
