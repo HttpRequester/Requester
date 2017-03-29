@@ -10,7 +10,7 @@ import android.support.v4.app.Fragment;
 
 import ir.bpadashi.requester.model.Params;
 import ir.bpadashi.requester.statics.Method;
-import ir.bpadashi.requester.statics.ReturnType;
+import ir.bpadashi.requester.statics.ResponseType;
 import ir.bpadashi.requester.threadpool.ConnectionThreadPool;
 import ir.bpadashi.requester.threadpool.ConnectionThreadSingle;
 
@@ -65,7 +65,7 @@ public class Requester {
         private List<Params> paramList;
 
         private Method aMethod;
-        private ReturnType returnType;
+        private ResponseType returnType;
 
 
         //Getter
@@ -118,7 +118,7 @@ public class Requester {
             return aMethod;
         }
 
-        public ReturnType getReturnType(){
+        public ResponseType getReturnType(){
             return returnType;
         }
 
@@ -188,7 +188,7 @@ public class Requester {
             return this;
         }
 
-        public RequesterBuilder setReturnType(ReturnType returnType) {
+        public RequesterBuilder setReturnType(ResponseType returnType) {
             this.returnType = returnType;
             return this;
         }

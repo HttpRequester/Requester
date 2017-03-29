@@ -23,9 +23,16 @@ android {
         }
         repositories {
             maven { url 'https://oss.sonatype.org/content/repositories/ksoap2-android-releases' }
+            mavenCentral()
         }
     }
+    packagingOptions {
+        pickFirst 'META-INF/services/com.fasterxml.jackson.core.ObjectCodec'
+    }
+
 }
+
+
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -33,6 +40,13 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.0.0-beta1'
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.google.code.ksoap2-android:ksoap2-android:3.6.1'
+
+    compile('org.simpleframework:simple-xml:2.7.1')
+            {
+                exclude group: 'stax', module: 'stax-api'
+                exclude group: 'xpp3', module: 'xpp3'
+            }
+
 }
 
 apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'

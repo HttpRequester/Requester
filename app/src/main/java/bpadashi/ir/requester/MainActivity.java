@@ -1,19 +1,22 @@
 package bpadashi.ir.requester;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import org.ksoap2.serialization.SoapObject;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
 
 import java.io.Serializable;
+import java.util.List;
 
 import ir.bpadashi.requester.IRequestHandler;
-import ir.bpadashi.requester.statics.Method;
 import ir.bpadashi.requester.Requester;
 import ir.bpadashi.requester.model.ParentContext;
 import ir.bpadashi.requester.model.ResponseString;
-import ir.bpadashi.requester.statics.ReturnType;
-import ir.bpadashi.requester.util.Serialize;
+import ir.bpadashi.requester.statics.Method;
+import ir.bpadashi.requester.statics.ResponseType;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        Requester aRequester = new Requester.RequesterBuilder(this)
+       /* Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
                 .setMethodName("GetProducts")
@@ -32,8 +35,11 @@ public class MainActivity extends AppCompatActivity {
 
                 .addParam("companyId", 20)
 
-                .setReturnType(ReturnType.SOAP_OBJECT)
+                .setModel(Model.class)
+
                 .setMethod(Method.SOAP)
+                .setReturnType(ResponseType.XML)
+
 
                 .addRequestHandler(new IRequestHandler() {
 
@@ -47,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onCache(ParentContext context, Object responseObj) {
                         // TODO Auto-generated method stub
 
+
+
                     }
 
                     @Override
@@ -58,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-                        SoapObject soapObject = (SoapObject) responseObj;
-                        System.out.println(soapObject.getPropertyCount());
 
+                        Model aModel = (Model) responseObj;
+                        System.out.println(aModel.getId());
 
                     }
 
@@ -73,15 +81,20 @@ public class MainActivity extends AppCompatActivity {
 
                 }).build();
 
-        aRequester.executeAnSync();
+        aRequester.executeAnSync();*/
 
-       /* Requester aRequester = new Requester.RequesterBuilder(this)
+        Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/reg")
+
                 .addParam("email","email@cc.com")
                 .addParam("password","123456")
-                .setMethod(Method.GET)
+
                 .setModel(Model.class)
+
+                .setMethod(Method.GET)
+                .setReturnType(ResponseType.JSON)
+
                 .addRequestHandler(new IRequestHandler() {
 
                     @Override
@@ -125,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }).build();
 
-        aRequester.executeAnSync();*/
+        aRequester.executeAnSync();
     }
 
     class Model implements Serializable {
@@ -142,5 +155,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+
 
 }

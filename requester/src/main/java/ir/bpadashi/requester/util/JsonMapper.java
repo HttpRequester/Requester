@@ -15,7 +15,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 
-public class Mapper {
+public class JsonMapper {
 
 	public <T> Object map(StringBuilder json, Class<T> typeClass) throws JSONException, Exception {
 

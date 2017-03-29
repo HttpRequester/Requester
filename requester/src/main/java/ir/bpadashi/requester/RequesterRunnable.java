@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
+
 import org.json.JSONException;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.BufferedReader;
@@ -28,8 +31,8 @@ import ir.bpadashi.requester.model.Params;
 import ir.bpadashi.requester.model.ParentContext;
 import ir.bpadashi.requester.model.ResponseString;
 import ir.bpadashi.requester.statics.Method;
-import ir.bpadashi.requester.statics.ReturnType;
-import ir.bpadashi.requester.util.Mapper;
+import ir.bpadashi.requester.statics.ResponseType;
+import ir.bpadashi.requester.util.JsonMapper;
 import ir.bpadashi.requester.util.NetworkUtil;
 import ir.bpadashi.requester.util.Serialize;
 import ir.bpadashi.requester.util.TextUtil;
@@ -48,7 +51,7 @@ public class RequesterRunnable implements Runnable {
     public String MethodName;
     public String Namespace;
     private Method aMethod;
-    private ReturnType returnType;
+    private ResponseType returnType;
 
 
     public RequesterRunnable(Requester.RequesterBuilder requester) {
@@ -228,7 +231,7 @@ public class RequesterRunnable implements Runnable {
                     response = getRequestPost(url);
                     break;
                 case SOAP:
-                    response = getRequestWsdl(url);
+                    response = getRequestSoap(url);
                     break;
                 default:
                     response = getRequestGet(url);
@@ -244,33 +247,53 @@ public class RequesterRunnable implements Runnable {
 
         Object obj = null;
 
-        if (returnType == ReturnType.TEXT || returnType == ReturnType.SOAP_OBJECT || returnType == ReturnType.SOAP_PRIMTIVE) {
-            obj = response;
-            onSuccessUi(aRequestHandler, response, hasCache);
-        } else {
+        switch (returnType){
 
-            Mapper mapper = new Mapper();
-            try {
-                obj = mapper.map(new StringBuilder(response.toString()), typeClass);
-                onSuccessUi(aRequestHandler, obj, hasCache);
-            } catch (JSONException e) {
-                onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
-                e.printStackTrace();
-            } catch (Exception e) {
-                onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
-                e.printStackTrace();
-            }
+            case TEXT:
+                obj = response;
+                onSuccessUi(aRequestHandler, response, hasCache);
+                break;
 
-            try {
-                new Serialize().saveToFile(context, obj, getRequestId(url));
-            } catch (NoSuchAlgorithmException e) {
-                onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
-                e.printStackTrace();
-            }
+            case JSON:
+                JsonMapper jsonMapper = new JsonMapper();
+                try {
+                    obj = jsonMapper.map(new StringBuilder(response.toString()), typeClass);
+                    onSuccessUi(aRequestHandler, obj, hasCache);
+                } catch (JSONException e) {
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
+                    e.printStackTrace();
+                }
+                break;
+
+            case XML:
+
+                Serializer serializer = new Persister();
+                try {
+                    obj = serializer.read(typeClass, response.toString());
+                    onSuccessUi(aRequestHandler, obj, hasCache);
+                } catch (Exception e) {
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
+                    e.printStackTrace();
+                }
+
+                break;
+
         }
+
+        try {
+            new Serialize().saveToFile(context, obj, getRequestId(url));
+        } catch (NoSuchAlgorithmException e) {
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
+            e.printStackTrace();
+        }
+
+
 
 
     }
@@ -355,7 +378,7 @@ public class RequesterRunnable implements Runnable {
 
     }
 
-    private Object getRequestWsdl(String urlString) throws IOException, XmlPullParserException {
+    private Object getRequestSoap(String urlString) throws IOException, XmlPullParserException {
 
         String SOAP_ACTION = SoapAction;
         String METHOD_NAME = MethodName;
@@ -374,10 +397,11 @@ public class RequesterRunnable implements Runnable {
         envelope.setOutputSoapObject(request);
 
         HttpTransportSE ht = new HttpTransportSE(URL);
+        ht.debug=true;
         ht.call(SOAP_ACTION, envelope);
 
 
-        Object response = envelope.getResponse();
+        Object response = ht.responseDump;
 
         return response;
 
@@ -401,24 +425,6 @@ public class RequesterRunnable implements Runnable {
         return new BigInteger(1, md.digest()).toString(16);
     }
 
-	/*private static void ScanSoapObject(SoapObject result)
-{
-    for(int i=0;i<result.getPropertyCount();i++)
-    {
-        if(result.getProperty(i) instanceof SoapObject)
-        {
-             ScanSoapObject((SoapObject)result.getProperty(i));
-        }
-        else
-        {
-            //do something with the current property
 
-            //get the current property name:
-            PropertyInfo pi = new PropertyInfo();
-            result.getPropertyInfo(i,pi);
-            String name = pi.getName();
-        }
-    }
-}*/
 
 }
