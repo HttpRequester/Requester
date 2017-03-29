@@ -3,14 +3,6 @@ package bpadashi.ir.requester;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import org.ksoap2.serialization.SoapObject;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
-
-import java.io.Serializable;
-import java.util.List;
-
 import ir.bpadashi.requester.IRequestHandler;
 import ir.bpadashi.requester.Requester;
 import ir.bpadashi.requester.model.ParentContext;
@@ -25,8 +17,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        soapTest();
+        webApiTest();
 
-       /* Requester aRequester = new Requester.RequesterBuilder(this)
+    }
+
+    public void soapTest(){
+        Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
                 .setMethodName("GetProducts")
@@ -35,10 +32,10 @@ public class MainActivity extends AppCompatActivity {
 
                 .addParam("companyId", 20)
 
-                .setModel(Model.class)
+                .setModel(ModelSoap.class)
 
                 .setMethod(Method.SOAP)
-                .setReturnType(ResponseType.XML)
+                .setResponseType(ResponseType.XML)
 
 
                 .addRequestHandler(new IRequestHandler() {
@@ -51,23 +48,19 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onCache(ParentContext context, Object responseObj) {
-                        // TODO Auto-generated method stub
 
-
-
+                        ModelSoap aModel = (ModelSoap) responseObj;
                     }
 
                     @Override
                     public void onResponse(ParentContext context, ResponseString response) {
-
 
                     }
 
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-
-                        Model aModel = (Model) responseObj;
+                        ModelSoap aModel = (ModelSoap) responseObj;
                         System.out.println(aModel.getId());
 
                     }
@@ -81,7 +74,11 @@ public class MainActivity extends AppCompatActivity {
 
                 }).build();
 
-        aRequester.executeAnSync();*/
+        aRequester.executeAnSync();
+
+    }
+
+    public void webApiTest(){
 
         Requester aRequester = new Requester.RequesterBuilder(this)
 
@@ -90,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
                 .addParam("email","email@cc.com")
                 .addParam("password","123456")
 
-                .setModel(Model.class)
+                .setModel(ModelJson.class)
 
                 .setMethod(Method.GET)
-                .setReturnType(ResponseType.JSON)
+                .setResponseType(ResponseType.JSON)
 
                 .addRequestHandler(new IRequestHandler() {
 
@@ -118,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-                        Model aModel=(Model)responseObj;
+                        ModelJson aModel=(ModelJson) responseObj;
 
                         System.out.println(aModel.getStatusCode());
                         System.out.println(aModel.getStatusDes());
@@ -141,20 +138,7 @@ public class MainActivity extends AppCompatActivity {
         aRequester.executeAnSync();
     }
 
-    class Model implements Serializable {
 
-        public int statusCode;
-        public String statusDes;
-
-        public int getStatusCode() {
-            return statusCode;
-        }
-
-        public String getStatusDes() {
-            return statusDes;
-        }
-
-    }
 
 
 

@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 
 @Root(name = "soap:Envelope", strict = false)
-public class Model implements Serializable {
+public class ModelSoap implements Serializable {
 
 
     static final long serialVersionUID =8740213115075839093L;

@@ -51,7 +51,7 @@ public class RequesterRunnable implements Runnable {
     public String MethodName;
     public String Namespace;
     private Method aMethod;
-    private ResponseType returnType;
+    private ResponseType responseType;
 
 
     public RequesterRunnable(Requester.RequesterBuilder requester) {
@@ -66,7 +66,7 @@ public class RequesterRunnable implements Runnable {
         this.url = requester.getUrl();
         this.typeClass = requester.getTypeClass();
         this.paramList = requester.getParamList();
-        this.returnType = requester.getReturnType();
+        this.responseType = requester.getResponseType();
         this.SoapAction = requester.getSoapAction();
         this.MethodName = requester.getMethodName();
         this.Namespace = requester.getNamespace();
@@ -247,7 +247,7 @@ public class RequesterRunnable implements Runnable {
 
         Object obj = null;
 
-        switch (returnType){
+        switch (responseType){
 
             case TEXT:
                 obj = response;

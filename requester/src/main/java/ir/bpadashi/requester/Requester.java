@@ -65,7 +65,7 @@ public class Requester {
         private List<Params> paramList;
 
         private Method aMethod;
-        private ResponseType returnType;
+        private ResponseType responseType;
 
 
         //Getter
@@ -118,8 +118,8 @@ public class Requester {
             return aMethod;
         }
 
-        public ResponseType getReturnType(){
-            return returnType;
+        public ResponseType getResponseType(){
+            return responseType;
         }
 
 
@@ -188,8 +188,8 @@ public class Requester {
             return this;
         }
 
-        public RequesterBuilder setReturnType(ResponseType returnType) {
-            this.returnType = returnType;
+        public RequesterBuilder setResponseType(ResponseType responseType) {
+            this.responseType = responseType;
             return this;
         }
 
