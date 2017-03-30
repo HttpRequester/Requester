@@ -59,6 +59,7 @@ SOAP webservice sample
                 .addBodyParam(String name, Object value)
                 
                 //create POJO class that implements Serializable for XML/JSON mapping.
+                //create create XML mapping class implements Serializable.  refer http://simple.sourceforge.net/
                 .addMapClass(Model.class)
                  
                  //defind SOAP for webservices and GET or POST for webApi.
@@ -199,8 +200,8 @@ SOAP webservice sample
         aRequester.executeAnSync();
 ```
 
-Create Model class for XML mapping .
-For more info about create XML mapping model  refer http://simple.sourceforge.net/
+Create class for XML mapping that implements Serializable .
+For more info about create XML mapping class  refer http://simple.sourceforge.net/
 ```java    
 @Root(name = "soap:Envelope", strict = false)
 public class ModelSoap implements Serializable {
@@ -318,7 +319,7 @@ Web Api webservice sample
         aRequester.executeAnSync();
 ```
 
-Create Model class for json mapping
+Create POJO class that implements Serializable for json mapping
 ```java    
 class ModelJson implements Serializable {
 
@@ -336,8 +337,10 @@ class ModelJson implements Serializable {
 ```
 Note:
 ----
-All mapping class must implements Serializable.
-If your Body param is Byte ,use Base64 to convert to String.
+- All mapping class must implements Serializable.
+- If your Body content param is Byte ,use Base64 to convert to String.
+- For more info about create XML mapping class  refer http://simple.sourceforge.net/
+
 
 License
 -------
