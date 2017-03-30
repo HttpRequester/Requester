@@ -334,7 +334,10 @@ class ModelJson implements Serializable {
     }
 }
 ```
-
+Note:
+----
+All mapping class must implements Serializable.
+If your Body param is Byte ,use Base64 to convert to String.
 
 License
 -------
@@ -351,9 +354,4 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
-
- [1]: http://square.github.io/okhttp
- [2]: https://github.com/square/okhttp/wiki
- [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.0.6/requester-1.0.4.aar
- [4]: https://search.maven.org/remote_content?g=com.squareup.okhttp3&a=mockwebserver&v=LATEST
- [snap]: https://oss.sonatype.org/content/repositories/snapshots/
+ [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.0.7/requester-1.0.4.aar
