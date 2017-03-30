@@ -38,6 +38,68 @@ Permission
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 
+SOAP webservice sample
+```java
+ 
+        Requester aRequester = new Requester.RequesterBuilder(this)
+
+                //For soap webservices
+                .setUrl("")
+                .setMethodName("")
+                .setNamespace("")
+                .setSoapAction("")
+                
+                //For web api webserivces
+                .setUrl("")
+
+                //add content to send 
+                // for SOAP webservices content add to PropertyInfo ,you can use neasted Soapobject and PropertyInfo and pass to         
+                //addParam method
+                //for GET/POST method content add to body content
+                .addParam(String name, Object value)
+                
+                //create POJO class that implements Serializable for XML/JSON mapping
+                .setModel(ModelSoap.class)
+                 
+                 //defind SOAP for webservices and GET or POST for webApi
+                .setMethod(Method.SOAP)
+                
+                //define webservices reponse content type XML,JSON,TEXT
+                .setResponseType(ResponseType.XML)
+
+
+                .addRequestHandler(new IRequestHandler() {
+
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onCache(ParentContext context, Object responseObj) {
+
+                    }
+
+                    @Override
+                    public void onResponse(ParentContext context, ResponseString responseString) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
+
+                    }
+
+                    @Override
+                    public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+
+                    }
+
+
+                }).build();
+
+        aRequester.executeAnSync();
+```
 
 SOAP webservice sample
 ```java
