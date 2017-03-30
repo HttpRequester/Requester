@@ -43,28 +43,28 @@ SOAP webservice sample
  
         Requester aRequester = new Requester.RequesterBuilder(this)
 
-                //For soap webservices
+                //for soap webservices.
                 .setUrl("")
                 .setMethodName("")
                 .setNamespace("")
                 .setSoapAction("")
                 
-                //For web api webserivces
+                //for web api webserivces.
                 .setUrl("")
 
                 //add content to send 
-                // for SOAP webservices content add to PropertyInfo ,you can use neasted Soapobject and PropertyInfo and pass to         
-                //addParam method
-                //for GET/POST method content add to body content
+                //for SOAP webservices content add to PropertyInfo ,you can use neasted Soapobject and PropertyInfo and pass to         
+                //addParam method.
+                //for GET/POST method content add to body content.
                 .addParam(String name, Object value)
                 
-                //create POJO class that implements Serializable for XML/JSON mapping
-                .setModel(ModelSoap.class)
+                //create POJO class that implements Serializable for XML/JSON mapping.
+                .setModel(Model.class)
                  
-                 //defind SOAP for webservices and GET or POST for webApi
+                 //defind SOAP for webservices and GET or POST for webApi.
                 .setMethod(Method.SOAP)
                 
-                //define webservices reponse content type XML,JSON,TEXT
+                //define webservices reponse content type XML,JSON,TEXT.
                 .setResponseType(ResponseType.XML)
 
 
@@ -72,33 +72,50 @@ SOAP webservice sample
 
                     @Override
                     public void onStart() {
+                    
+                    //call on start of process to get response , good place to put Preloader .
 
                     }
 
                     @Override
                     public void onCache(ParentContext context, Object responseObj) {
+                    
+                    //return object of class you pass in setMode() from last webservice response , that store in database
+                    //good for using when no internet connection available, to last webserivce response result.
 
                     }
 
                     @Override
                     public void onResponse(ParentContext context, ResponseString responseString) {
+                    
+                    //call when webservice response , and you can see result in string.
 
                     }
 
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
+                    
+                    //return object of class you pass in setMode() , you just need to cast responseObj to class you define in  setMode()
+                    //and then you object field and method 
+                    //Example : for Model.class  Model model=(Model)responseObj;
 
                     }
 
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+                    
+                    //call when exception happen,
 
                     }
 
 
                 }).build();
 
+        //run this task in parallel of other task in deferent Thread 
         aRequester.executeAnSync();
+        
+        //run this task in queue of others task run by executeSync , and FIFO (first in first out)
+        aRequester.executeSync();
 ```
 
 SOAP webservice sample
