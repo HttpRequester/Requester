@@ -1,7 +1,14 @@
 package bpadashi.ir.requester;
 
+import android.app.ListActivity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
+import android.view.View;
+
+import java.util.List;
 
 import ir.bpadashi.requester.IRequestHandler;
 import ir.bpadashi.requester.Requester;
@@ -10,19 +17,19 @@ import ir.bpadashi.requester.model.ResponseString;
 import ir.bpadashi.requester.statics.Method;
 import ir.bpadashi.requester.statics.ResponseType;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        soapTest();
-        webApiTest();
-
     }
 
-    public void soapTest(){
+    public void soapTest(View v) {
+
+        final ProgressDialog progress = new ProgressDialog(this);
+
         Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
@@ -42,7 +49,11 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onStart() {
-                        // TODO Auto-generated method stub
+
+                        progress.setTitle("Loading");
+                        progress.setMessage("Wait while loading...");
+                        progress.setCancelable(true);
+                        progress.show();
 
                     }
 
@@ -50,24 +61,43 @@ public class MainActivity extends AppCompatActivity {
                     public void onCache(ParentContext context, Object responseObj) {
 
                         ModelSoap aModel = (ModelSoap) responseObj;
+                        setListAdapter(new SoapArrayAdapter(context.getActivity(), aModel.getEntity()));
+                        progress.dismiss();
                     }
 
                     @Override
-                    public void onResponse(ParentContext context, ResponseString response) {
+                    public void onResponse(ParentContext context, ResponseString responseString) {
+
+                        Log.i("Info", responseString.getResponse());
 
                     }
 
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-                        ModelSoap aModel = (ModelSoap) responseObj;
-                        System.out.println(aModel.getId());
+                        if (!hasCache) {
+                            ModelSoap aModel = (ModelSoap) responseObj;
+                            setListAdapter(new SoapArrayAdapter(context.getActivity(), aModel.getEntity()));
+                            progress.dismiss();
+                        }
+
+
 
                     }
 
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
-                        // TODO Auto-generated method stub
+
+                        new AlertDialog.Builder(context.getActivity())
+                                .setTitle("Error")
+                                .setMessage(exception.getMessage()+" "+".load list from cache if any")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
 
                     }
 
@@ -78,14 +108,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void webApiTest(){
+    public void webApiTest(View v) {
+
+        final ProgressDialog progress = new ProgressDialog(this);
 
         Requester aRequester = new Requester.RequesterBuilder(this)
 
-                .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/reg")
+                .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/getinfo")
 
-                .addParam("email","email@cc.com")
-                .addParam("password","123456")
+                .addParam("low", 0)
+                .addParam("high", 10)
 
                 .setModel(ModelJson.class)
 
@@ -96,29 +128,40 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onStart() {
-                        // Setup your preloader here!!!
+
+
+                        progress.setTitle("Loading");
+                        progress.setMessage("Wait while loading...");
+                        progress.setCancelable(true);
+                        progress.show();
 
                     }
 
                     @Override
                     public void onCache(ParentContext context, Object responseObj) {
 
+                        List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
+                        setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
+                        progress.dismiss();
+
                     }
 
                     @Override
                     public void onResponse(ParentContext context, ResponseString responseString) {
 
-                        System.out.println(responseString.getResponse());
+                        Log.i("Info", responseString.getResponse());
 
                     }
 
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-                        ModelJson aModel=(ModelJson) responseObj;
 
-                        System.out.println(aModel.getStatusCode());
-                        System.out.println(aModel.getStatusDes());
+                    if(!hasCache){
+                        List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
+                        setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
+                        progress.dismiss();
+                    }
 
 
 
@@ -126,9 +169,19 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
-                        // TODO Auto-generated method stub
 
-                        System.out.println(exception.getMessage());
+                        Log.e("Error", exception.getMessage());
+
+                        new AlertDialog.Builder(context.getActivity())
+                                .setTitle("Error")
+                                .setMessage(exception.getMessage()+" "+".load list from cache if any")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
 
                     }
 
@@ -137,9 +190,6 @@ public class MainActivity extends AppCompatActivity {
 
         aRequester.executeAnSync();
     }
-
-
-
 
 
 }
