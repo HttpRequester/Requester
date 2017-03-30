@@ -13,13 +13,13 @@ Download [the latest aar][3] or grab via Maven:
 <dependency>
   <groupId>ir.bpadashi.requester</groupId>
   <artifactId>requester</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   <type>pom</type>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'ir.bpadashi.requester:requester:1.0.5'
+compile 'ir.bpadashi.requester:requester:1.0.6'
 ```
 Add to build.gradle of your app:
 ```groovy
@@ -50,39 +50,37 @@ SOAP webservice sample
 
                 .addParam("companyId", 20)
 
-                .setModel(Model.class)
+                .setModel(ModelSoap.class)
 
                 .setMethod(Method.SOAP)
-                .setReturnType(ResponseType.XML)
+                .setResponseType(ResponseType.XML)
 
 
                 .addRequestHandler(new IRequestHandler() {
 
                     @Override
                     public void onStart() {
-                        // TODO Auto-generated method stub
+                         // Setup your preloader here!!!
 
                     }
 
                     @Override
                     public void onCache(ParentContext context, Object responseObj) {
-                        // TODO Auto-generated method stub
 
-
-
+                        ModelSoap aModel = (ModelSoap) responseObj;
                     }
 
                     @Override
                     public void onResponse(ParentContext context, ResponseString response) {
-
-
+                    
+                          System.out.println(responseString.getResponse());
+                          
                     }
 
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-
-                        Model aModel = (Model) responseObj;
+                        ModelSoap aModel = (ModelSoap) responseObj;
                         System.out.println(aModel.getId());
 
                     }
@@ -129,10 +127,10 @@ Web Api webservice sample
                 .addParam("email","email@cc.com")
                 .addParam("password","123456")
 
-                .setModel(Model.class)
+                .setModel(ModelJson.class)
 
                 .setMethod(Method.GET)
-                .setReturnType(ResponseType.JSON)
+                .setResponseType(ResponseType.JSON)
 
                 .addRequestHandler(new IRequestHandler() {
 
@@ -157,7 +155,7 @@ Web Api webservice sample
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-                        Model aModel=(Model)responseObj;
+                        ModelJson aModel=(ModelJson) responseObj;
 
                         System.out.println(aModel.getStatusCode());
                         System.out.println(aModel.getStatusDes());
@@ -217,6 +215,6 @@ License
 
  [1]: http://square.github.io/okhttp
  [2]: https://github.com/square/okhttp/wiki
- [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.0.4/requester-1.0.4.aar
+ [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.0.6/requester-1.0.4.aar
  [4]: https://search.maven.org/remote_content?g=com.squareup.okhttp3&a=mockwebserver&v=LATEST
  [snap]: https://oss.sonatype.org/content/repositories/snapshots/
