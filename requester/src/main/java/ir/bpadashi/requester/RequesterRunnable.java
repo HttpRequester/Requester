@@ -91,7 +91,7 @@ public class RequesterRunnable implements Runnable {
         if (this.isFragment) {
             onErrorFragment(aRequestHandler, exception, exceptionEn, exceptionFa);
             return;
-        } else if (context == null)
+        } else if (context == null || ((Activity) context).isFinishing())
             return;
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
@@ -106,7 +106,7 @@ public class RequesterRunnable implements Runnable {
         if (this.isFragment) {
             onResponseFragment(aRequestHandler, response);
             return;
-        } else if (context == null)
+        } else if (context == null || ((Activity) context).isFinishing())
             return;
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
@@ -121,7 +121,7 @@ public class RequesterRunnable implements Runnable {
         if (this.isFragment) {
             onCacheFragment(aRequestHandler, model);
             return;
-        } else if (context == null)
+        } else if (context == null || ((Activity) context).isFinishing())
             return;
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
@@ -136,7 +136,7 @@ public class RequesterRunnable implements Runnable {
         if (this.isFragment) {
             onSuccessFragment(aRequestHandler, model, hasCache);
             return;
-        } else if (context == null)
+        } else if (context == null || ((Activity) context).isFinishing())
             return;
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
@@ -148,7 +148,7 @@ public class RequesterRunnable implements Runnable {
 
     public void onErrorFragment(final RequestHandler aRequestHandler, final Exception exception,
                                 final String exceptionEn, final String exceptionFa) {
-        if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
+        if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded() || fragment.getActivity().isFinishing())
             return;
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
             @Override
@@ -159,7 +159,7 @@ public class RequesterRunnable implements Runnable {
     }
 
     public void onResponseFragment(final RequestHandler aRequestHandler, final Object response) {
-        if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
+        if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded() || fragment.getActivity().isFinishing())
             return;
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
             @Override
@@ -170,7 +170,7 @@ public class RequesterRunnable implements Runnable {
     }
 
     public void onCacheFragment(final RequestHandler aRequestHandler, final Object model) {
-        if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
+        if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded() || fragment.getActivity().isFinishing())
             return;
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
             @Override
@@ -181,7 +181,7 @@ public class RequesterRunnable implements Runnable {
     }
 
     public void onSuccessFragment(final RequestHandler aRequestHandler, final Object model, final boolean hasCache) {
-        if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
+        if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded() || fragment.getActivity().isFinishing())
             return;
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
             @Override
