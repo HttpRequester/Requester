@@ -52,11 +52,12 @@ SOAP webservice sample
                 //for web api webserivces.
                 .setUrl("")
 
-                //add content to send 
-                //for SOAP webservices content add to PropertyInfo ,you can use neasted Soapobject and PropertyInfo and pass to         
-                //addParam method.
+                //add content to send addBodyParams(key,value)
+                //for SOAP webservices content add to PropertyInfo .
+                //you can use neasted Soapobject and PropertyInfo and pass to addBodyParam(soapobject) instead addBodyParams(key,value) 
                 //for GET/POST method content add to body content.
-                .addBodyParam(String name, Object value)
+                //if your param is bytes use addBodyParam(byte[]).
+                .addBodyParams(String name, Object value)
                 
                 //create POJO class that implements Serializable for XML/JSON mapping.
                 //create create XML mapping class implements Serializable.  refer http://simple.sourceforge.net/
@@ -344,8 +345,24 @@ class ModelJson implements Serializable {
 Note:
 ----
 - All mapping class must implements Serializable.
-- If your Body content param is Byte ,use Base64 to convert to String.
+- If your param is bytes use addBodyParam(byte[]) . you also use Base64 to convert to String
 - For more info about create XML mapping class  refer http://simple.sourceforge.net/
+- For SOAP and nested SoapObject use addBodyParam(soapObject) <br />
+  example:
+```java    
+  SoapObject users = new SoapObject(NAMESPACE, "users");
+  SoapObject john = new SoapObject(NAMESPACE, "user");
+    john.addProperty("name", "john");
+    john.addProperty("age", 12);
+  SoapObject marie = new SoapObject(NAMESPACE, "user");
+    marie.addProperty("name", "marie");
+    marie.addProperty("age", 27);
+  users.addSoapObject(john);
+  users.addSoapObject(marie);
+  .addBodyParam(users)
+```
+- For set request header or cookie use addHeaderParam(key,value).
+- For set request timeout for both Soap and webapi use setTimeout(int millisecond) .
 
 
 License
