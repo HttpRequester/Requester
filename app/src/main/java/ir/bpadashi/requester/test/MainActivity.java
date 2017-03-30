@@ -1,4 +1,4 @@
-package bpadashi.ir.requester;
+package ir.bpadashi.requester.test;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -14,8 +14,8 @@ import ir.bpadashi.requester.RequestHandler;
 import ir.bpadashi.requester.Requester;
 import ir.bpadashi.requester.model.ParentContext;
 import ir.bpadashi.requester.model.ResponseString;
-import ir.bpadashi.requester.statics.RequestMethod;
 import ir.bpadashi.requester.statics.ContentType;
+import ir.bpadashi.requester.statics.RequestMethod;
 
 public class MainActivity extends ListActivity {
 
@@ -109,7 +109,6 @@ public class MainActivity extends ListActivity {
                 }).build();
 
         aRequester.executeAnSync();
-
 
     }
 

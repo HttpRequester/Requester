@@ -1,4 +1,4 @@
-package bpadashi.ir.requester;
+package ir.bpadashi.requester.test;
 
 import java.io.Serializable;
 
