@@ -11,5 +11,6 @@ public class TextUtil {
 	public static final String INVALID_SERVER_DATA = "\u062f\u06cc\u062a\u0627\u06cc \u0633\u0631\u0648\u0631 \u0646\u0627"+
 	           "\u0645\u0639\u062a\u0628\u0631 \u0627\u0633\u062a";
 	public static final String ERROR_ON_RESPONSE_CODE = "Response code not 200";
+	public static final String RESPONSE_IS_NULL = "Response in null";
 
 }

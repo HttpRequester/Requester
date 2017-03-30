@@ -1,6 +1,6 @@
 package ir.bpadashi.requester.statics;
 
-public enum Method {
+public enum RequestMethod {
 	
 	GET,POST,SOAP
 

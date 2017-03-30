@@ -3,7 +3,7 @@ package ir.bpadashi.requester;
 import ir.bpadashi.requester.model.ParentContext;
 import ir.bpadashi.requester.model.ResponseString;
 
-public interface IRequestHandler  {
+public interface RequestHandler {
 	
 	public  void onStart();
 	public  void onCache(ParentContext context,Object responseObj);

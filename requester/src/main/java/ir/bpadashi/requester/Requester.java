@@ -8,9 +8,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
-import ir.bpadashi.requester.model.Params;
-import ir.bpadashi.requester.statics.Method;
-import ir.bpadashi.requester.statics.ResponseType;
+import ir.bpadashi.requester.model.Param;
+import ir.bpadashi.requester.statics.RequestMethod;
+import ir.bpadashi.requester.statics.ContentType;
 import ir.bpadashi.requester.threadpool.ConnectionThreadPool;
 import ir.bpadashi.requester.threadpool.ConnectionThreadSingle;
 
@@ -61,72 +61,83 @@ public class Requester {
         private String Namespace;
 
         private Class typeClass;
-        private IRequestHandler aRequestHandler;
-        private List<Params> paramList;
+        private RequestHandler aRequestHandler;
 
-        private Method aMethod;
-        private ResponseType responseType;
+        private List<Param> bodyParams;
+        private List<Param> headerParams;
+
+        private int timeout;
+
+        private RequestMethod aRequestMethod;
+        private ContentType contentType;
 
 
         //Getter
 
-        public Context getContext(){
-            return context ;
+        public Context getContext() {
+            return context;
         }
 
-        public Fragment getFragment(){
+        public Fragment getFragment() {
             return fragment;
         }
 
 
-        public boolean isFragment(){
+        public boolean isFragment() {
             return isFragment;
         }
 
 
-        public String getUrl(){
+        public String getUrl() {
             return url;
         }
 
 
-        public String getSoapAction(){
-            return SoapAction ;
+        public String getSoapAction() {
+            return SoapAction;
         }
 
 
-        public String getMethodName(){
-            return MethodName ;
+        public String getMethodName() {
+            return MethodName;
         }
 
 
-        public String getNamespace(){
-            return Namespace ;
+        public String getNamespace() {
+            return Namespace;
         }
 
 
-        public Class getTypeClass(){
+        public Class getTypeClass() {
             return typeClass;
         }
 
 
-        public IRequestHandler getIRequestHandler(){
-            return aRequestHandler ;
+        public RequestHandler getIRequestHandler() {
+            return aRequestHandler;
         }
 
 
-        public Method getMethod(){
-            return aMethod;
+        public RequestMethod getMethod() {
+            return aRequestMethod;
         }
 
-        public ResponseType getResponseType(){
-            return responseType;
+        public ContentType getContentType() {
+            return contentType;
         }
 
 
-        public List<Params> getParamList(){
-            return paramList ;
+        public List<Param> getBodyParams() {
+            return bodyParams;
         }
 
+        public List<Param> getHeaderParams() {
+            return bodyParams;
+        }
+
+        public int getTimeout() {
+            return timeout;
+        }
 
 
         //Setter
@@ -163,39 +174,54 @@ public class Requester {
         }
 
 
-        public RequesterBuilder setModel(final Class typeClass) {
+        public RequesterBuilder addMapClass(final Class typeClass) {
             this.typeClass = typeClass;
             return this;
         }
 
 
-        public RequesterBuilder addRequestHandler(final IRequestHandler aRequestHandler) {
+        public RequesterBuilder addRequestHandler(final RequestHandler aRequestHandler) {
             this.aRequestHandler = aRequestHandler;
             return this;
         }
 
-        public RequesterBuilder addParam(final String key, Object value) {
+        public RequesterBuilder addBodyParam(final String key, Object value) {
 
-            if (this.paramList == null)
-                this.paramList = new ArrayList<>();
+            if (this.bodyParams == null)
+                this.bodyParams = new ArrayList<>();
 
-            this.paramList.add(new Params(key, value));
+            this.bodyParams.add(new Param(key, value));
             return this;
         }
 
-        public RequesterBuilder setMethod(Method aMethod) {
-            this.aMethod = aMethod;
+        public RequesterBuilder addHeaderParam(final String key, Object value) {
+
+            if (this.headerParams == null)
+                this.headerParams = new ArrayList<>();
+
+            this.headerParams.add(new Param(key, value));
             return this;
         }
 
-        public RequesterBuilder setResponseType(ResponseType responseType) {
-            this.responseType = responseType;
+        public RequesterBuilder setRequestMethod(RequestMethod aRequestMethod) {
+            this.aRequestMethod = aRequestMethod;
+            return this;
+        }
+
+        public RequesterBuilder setResponseContentType(ContentType contentType) {
+            this.contentType = contentType;
+            return this;
+        }
+
+        public RequesterBuilder setTimeout(final int timeout) {
+            this.timeout = timeout;
             return this;
         }
 
         public Requester build() {
             return new Requester(this);
         }
+
 
     }
 

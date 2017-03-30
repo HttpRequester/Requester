@@ -10,12 +10,12 @@ import android.view.View;
 
 import java.util.List;
 
-import ir.bpadashi.requester.IRequestHandler;
+import ir.bpadashi.requester.RequestHandler;
 import ir.bpadashi.requester.Requester;
 import ir.bpadashi.requester.model.ParentContext;
 import ir.bpadashi.requester.model.ResponseString;
-import ir.bpadashi.requester.statics.Method;
-import ir.bpadashi.requester.statics.ResponseType;
+import ir.bpadashi.requester.statics.RequestMethod;
+import ir.bpadashi.requester.statics.ContentType;
 
 public class MainActivity extends ListActivity {
 
@@ -37,15 +37,15 @@ public class MainActivity extends ListActivity {
                 .setNamespace("http://tempuri.org/")
                 .setSoapAction("http://tempuri.org/GetProducts")
 
-                .addParam("companyId", 20)
+                .addBodyParam("companyId", 20)
 
-                .setModel(ModelSoap.class)
+                .addMapClass(ModelSoap.class)
 
-                .setMethod(Method.SOAP)
-                .setResponseType(ResponseType.XML)
+                .setRequestMethod(RequestMethod.SOAP)
+                .setResponseContentType(ContentType.XML)
 
 
-                .addRequestHandler(new IRequestHandler() {
+                .addRequestHandler(new RequestHandler() {
 
                     @Override
                     public void onStart() {
@@ -116,15 +116,15 @@ public class MainActivity extends ListActivity {
 
                 .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/getinfo")
 
-                .addParam("low", 0)
-                .addParam("high", 10)
+                .addBodyParam("low", 0)
+                .addBodyParam("high", 10)
 
-                .setModel(ModelJson.class)
+                .addMapClass(ModelJson.class)
 
-                .setMethod(Method.GET)
-                .setResponseType(ResponseType.JSON)
+                .setRequestMethod(RequestMethod.GET)
+                .setResponseContentType(ContentType.JSON)
 
-                .addRequestHandler(new IRequestHandler() {
+                .addRequestHandler(new RequestHandler() {
 
                     @Override
                     public void onStart() {
@@ -170,7 +170,7 @@ public class MainActivity extends ListActivity {
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
 
-                        Log.e("Error", exception.getMessage());
+                        System.out.println(exception.toString());
 
                         new AlertDialog.Builder(context.getActivity())
                                 .setTitle("Error")

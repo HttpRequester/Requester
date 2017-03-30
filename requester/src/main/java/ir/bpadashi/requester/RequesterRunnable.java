@@ -27,11 +27,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import ir.bpadashi.requester.model.Params;
+import ir.bpadashi.requester.model.Param;
 import ir.bpadashi.requester.model.ParentContext;
 import ir.bpadashi.requester.model.ResponseString;
-import ir.bpadashi.requester.statics.Method;
-import ir.bpadashi.requester.statics.ResponseType;
+import ir.bpadashi.requester.statics.RequestMethod;
+import ir.bpadashi.requester.statics.ContentType;
 import ir.bpadashi.requester.util.JsonMapper;
 import ir.bpadashi.requester.util.NetworkUtil;
 import ir.bpadashi.requester.util.Serialize;
@@ -43,15 +43,17 @@ public class RequesterRunnable implements Runnable {
     private Context context;
     private Fragment fragment;
     private boolean isFragment;
-    private IRequestHandler aRequestHandler;
+    private RequestHandler aRequestHandler;
     private String url;
     private Class typeClass;
-    private List<Params> paramList;
+    private List<Param> bodyParams;
+    private List<Param> headerParams;
     public String SoapAction;
     public String MethodName;
     public String Namespace;
-    private Method aMethod;
-    private ResponseType responseType;
+    private RequestMethod aRequestMethod;
+    private ContentType contentType;
+    private int timeout=30000;
 
 
     public RequesterRunnable(Requester.RequesterBuilder requester) {
@@ -59,22 +61,28 @@ public class RequesterRunnable implements Runnable {
         this.context = requester.getContext();
         this.fragment = requester.getFragment();
 
-        if (fragment != null)
+        if (fragment != null) {
             this.context = fragment.getActivity();
+            this.isFragment=true;
+        }
+
+
 
         this.aRequestHandler = requester.getIRequestHandler();
         this.url = requester.getUrl();
         this.typeClass = requester.getTypeClass();
-        this.paramList = requester.getParamList();
-        this.responseType = requester.getResponseType();
+        this.bodyParams = requester.getBodyParams();
+        this.headerParams = requester.getHeaderParams();
+        this.contentType = requester.getContentType();
         this.SoapAction = requester.getSoapAction();
         this.MethodName = requester.getMethodName();
         this.Namespace = requester.getNamespace();
-        this.aMethod = requester.getMethod();
+        this.aRequestMethod = requester.getMethod();
+        this.timeout=requester.getTimeout();
     }
 
 
-    public void onErrorUi(final IRequestHandler aRequestHandler, final Exception exception,
+    public void onErrorUi(final RequestHandler aRequestHandler, final Exception exception,
                           final String exceptionFarsi) {
 
         if (this.isFragment) {
@@ -90,7 +98,7 @@ public class RequesterRunnable implements Runnable {
         });
     }
 
-    public void onResponseUi(final IRequestHandler aRequestHandler, final Object response) {
+    public void onResponseUi(final RequestHandler aRequestHandler, final Object response) {
 
         if (this.isFragment) {
             onResponseFragment(aRequestHandler, response);
@@ -105,7 +113,7 @@ public class RequesterRunnable implements Runnable {
         });
     }
 
-    public void onCacheUi(final IRequestHandler aRequestHandler, final Object model) {
+    public void onCacheUi(final RequestHandler aRequestHandler, final Object model) {
 
         if (this.isFragment) {
             onCacheFragment(aRequestHandler, model);
@@ -120,7 +128,7 @@ public class RequesterRunnable implements Runnable {
         });
     }
 
-    public void onSuccessUi(final IRequestHandler aRequestHandler, final Object model, final boolean hasCache) {
+    public void onSuccessUi(final RequestHandler aRequestHandler, final Object model, final boolean hasCache) {
 
         if (this.isFragment) {
             onSuccessFragment(aRequestHandler, model, hasCache);
@@ -135,7 +143,7 @@ public class RequesterRunnable implements Runnable {
         });
     }
 
-    public void onErrorFragment(final IRequestHandler aRequestHandler, final Exception exception,
+    public void onErrorFragment(final RequestHandler aRequestHandler, final Exception exception,
                                 final String exceptionFarsi) {
         if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
             return;
@@ -147,7 +155,7 @@ public class RequesterRunnable implements Runnable {
         });
     }
 
-    public void onResponseFragment(final IRequestHandler aRequestHandler, final Object response) {
+    public void onResponseFragment(final RequestHandler aRequestHandler, final Object response) {
         if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
             return;
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
@@ -158,7 +166,7 @@ public class RequesterRunnable implements Runnable {
         });
     }
 
-    public void onCacheFragment(final IRequestHandler aRequestHandler, final Object model) {
+    public void onCacheFragment(final RequestHandler aRequestHandler, final Object model) {
         if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
             return;
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
@@ -169,7 +177,7 @@ public class RequesterRunnable implements Runnable {
         });
     }
 
-    public void onSuccessFragment(final IRequestHandler aRequestHandler, final Object model, final boolean hasCache) {
+    public void onSuccessFragment(final RequestHandler aRequestHandler, final Object model, final boolean hasCache) {
         if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
             return;
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
@@ -193,7 +201,7 @@ public class RequesterRunnable implements Runnable {
             }
         });
 
-        boolean hasCache = true;
+        boolean hasCache = false;
         try {
             Object obj = new Serialize().readFromFile(context, getRequestId(url));
             if (obj != null) {
@@ -223,7 +231,7 @@ public class RequesterRunnable implements Runnable {
 
         Object response = null;
         try {
-            switch (aMethod) {
+            switch (aRequestMethod) {
                 case GET:
                     response = getRequestGet(url);
                     break;
@@ -247,7 +255,7 @@ public class RequesterRunnable implements Runnable {
 
         Object obj = null;
 
-        switch (responseType){
+        switch (contentType){
 
             case TEXT:
                 obj = response;
@@ -302,8 +310,8 @@ public class RequesterRunnable implements Runnable {
 
         StringBuilder postData = new StringBuilder();
 
-        if (paramList != null)
-            for (Params param : paramList) {
+        if (bodyParams != null)
+            for (Param param : bodyParams) {
                 if (postData.length() != 0)
                     postData.append('&');
                 postData.append(URLEncoder.encode(param.key, "UTF-8"));
@@ -315,8 +323,16 @@ public class RequesterRunnable implements Runnable {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         conn.setRequestMethod("GET");
-        conn.setConnectTimeout(30000);
-        conn.setReadTimeout(30000);
+
+        conn.setConnectTimeout(timeout);
+        conn.setReadTimeout(timeout);
+
+        if (headerParams != null)
+            for (Param param : headerParams) {
+                conn.setRequestProperty(param.key, param.value.toString());
+            }
+
+        conn.setDoInput(true);
 
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String inputLine;
@@ -341,8 +357,8 @@ public class RequesterRunnable implements Runnable {
 
         StringBuilder postData = new StringBuilder();
 
-        if (paramList != null)
-            for (Params param : paramList) {
+        if (bodyParams != null)
+            for (Param param : bodyParams) {
                 if (postData.length() != 0)
                     postData.append('&');
                 postData.append(URLEncoder.encode(param.key, "UTF-8"));
@@ -353,13 +369,18 @@ public class RequesterRunnable implements Runnable {
         byte[] postDataBytes = postData.toString().getBytes("UTF-8");
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-        conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
-        conn.setDoOutput(true);
 
-        conn.setConnectTimeout(30000);
-        conn.setReadTimeout(30000);
+        conn.setRequestMethod("POST");
+
+        conn.setConnectTimeout(timeout);
+        conn.setReadTimeout(timeout);
+
+        if (headerParams != null)
+            for (Param param : headerParams) {
+                conn.setRequestProperty(param.key, param.value.toString());
+            }
+
+        conn.setDoInput(true);
 
         conn.getOutputStream().write(postDataBytes);
 
@@ -387,8 +408,8 @@ public class RequesterRunnable implements Runnable {
 
         SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
 
-        if (paramList != null)
-            for (Params param : paramList) {
+        if (bodyParams != null)
+            for (Param param : bodyParams) {
                 request.addProperty(param.key, param.value);
             }
 
@@ -396,7 +417,7 @@ public class RequesterRunnable implements Runnable {
         envelope.dotNet = true;
         envelope.setOutputSoapObject(request);
 
-        HttpTransportSE ht = new HttpTransportSE(URL);
+        HttpTransportSE ht = new HttpTransportSE(URL,timeout);
         ht.debug=true;
         ht.call(SOAP_ACTION, envelope);
 
@@ -414,8 +435,8 @@ public class RequesterRunnable implements Runnable {
 
         aStringBuilder.append(url);
 
-        if (paramList != null)
-            for (Params param : paramList) {
+        if (bodyParams != null)
+            for (Param param : bodyParams) {
                 aStringBuilder.append(param.key);
                 aStringBuilder.append(param.value.toString());
             }
