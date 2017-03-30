@@ -56,8 +56,8 @@ SOAP webservice sample
                 //for SOAP webservices content add to PropertyInfo .
                 //you can use neasted Soapobject and PropertyInfo and pass to addBodyParam(soapobject) instead addBodyParams(key,value) 
                 //for GET/POST method content add to body content.
-                //if your param is bytes use addBodyParam(byte[]).
-                .addBodyParams(String name, Object value)
+                //if your content is bytes use addBodyParam(byte[]).
+                .addBodyParams(name,value)
                 
                 //create POJO class that implements Serializable for XML/JSON mapping.
                 //create create XML mapping class implements Serializable.  refer http://simple.sourceforge.net/
@@ -66,7 +66,7 @@ SOAP webservice sample
                  //defind SOAP for webservices and GET or POST for webApi.
                 .setRequestMethod(RequestMethod)
                 
-                //define webservices reponse content type XML,JSON,TEXT.
+                //define webservices reponse content type XML,JSON,TEXT,BYTE.
                 .setResponseContentType(ContentType)
 
 
@@ -104,9 +104,9 @@ SOAP webservice sample
                     }
 
                     @Override
-                    public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+                    public void onError(ParentContext context, Exception exception, String exceptionEn, String exceptionFa) {
                     
-                    //call when exception happen,
+                    //call when exception happen, use exceptionEn in yout error dialog
 
                     }
 
@@ -345,7 +345,7 @@ class ModelJson implements Serializable {
 Note:
 ----
 - All mapping class must implements Serializable.
-- If your param is bytes use addBodyParam(byte[]) . you also use Base64 to convert to String
+- If your param is bytes use addBodyParam(byte[]) . you also use Base64 to convert to String and put in addBodyParams(key,base64)
 - For more info about create XML mapping class  refer http://simple.sourceforge.net/
 - For SOAP and nested SoapObject use addBodyParam(soapObject) <br />
   example:
