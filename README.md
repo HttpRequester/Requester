@@ -13,13 +13,13 @@ Download [the latest aar][3] or grab via Maven:
 <dependency>
   <groupId>ir.bpadashi.requester</groupId>
   <artifactId>requester</artifactId>
-  <version>1.0.7</version>
+  <version>1.0.8</version>
   <type>pom</type>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'ir.bpadashi.requester:requester:1.0.7'
+compile 'ir.bpadashi.requester:requester:1.0.8'
 ```
 Add to build.gradle of your app:
 ```groovy
@@ -37,8 +37,7 @@ Permission
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
-
-SOAP webservice sample
+How To Implement
 ```java
  
         Requester aRequester = new Requester.RequesterBuilder(this)
@@ -52,11 +51,12 @@ SOAP webservice sample
                 //for web api webserivces.
                 .setUrl("")
 
-                //add content to send 
-                //for SOAP webservices content add to PropertyInfo ,you can use neasted Soapobject and PropertyInfo and pass to         
-                //addParam method.
+                //add content to send addBodyParams(key,value)
+                //for SOAP webservices content add to PropertyInfo .
+                //you can use neasted Soapobject and PropertyInfo and pass to addBodyParam(soapobject) instead addBodyParams(key,value) 
                 //for GET/POST method content add to body content.
-                .addBodyParam(String name, Object value)
+                //if your content is bytes use addBodyParam(byte[]).
+                .addBodyParams(name,value)
                 
                 //create POJO class that implements Serializable for XML/JSON mapping.
                 //create create XML mapping class implements Serializable.  refer http://simple.sourceforge.net/
@@ -65,7 +65,7 @@ SOAP webservice sample
                  //defind SOAP for webservices and GET or POST for webApi.
                 .setRequestMethod(RequestMethod)
                 
-                //define webservices reponse content type XML,JSON,TEXT.
+                //define webservices reponse content type XML,JSON,TEXT,BYTE.
                 .setResponseContentType(ContentType)
 
 
@@ -103,9 +103,9 @@ SOAP webservice sample
                     }
 
                     @Override
-                    public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+                    public void onError(ParentContext context, Exception exception, String exceptionEn, String exceptionFa) {
                     
-                    //call when exception happen,
+                    //call when exception happen, use exceptionEn in yout error dialog
 
                     }
 
@@ -122,7 +122,7 @@ SOAP webservice sample
 SOAP webservice sample
 ```java
         final ProgressDialog progress = new ProgressDialog(this);
-        
+
         Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
@@ -130,7 +130,7 @@ SOAP webservice sample
                 .setNamespace("http://tempuri.org/")
                 .setSoapAction("http://tempuri.org/GetProducts")
 
-                .addBodyParam("companyId", 20)
+                .addBodyParams("companyId", 20)
 
                 .addMapClass(ModelSoap.class)
 
@@ -175,15 +175,19 @@ SOAP webservice sample
                         }
 
 
-
                     }
 
                     @Override
-                    public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+                    public void onError(ParentContext context, Exception exception, String exceptionEn, String exceptionFa) {
+
+                        Log.e("Error",exception.toString());
+
+                        progress.dismiss();
+
 
                         new AlertDialog.Builder(context.getActivity())
                                 .setTitle("Error")
-                                .setMessage(exception.getMessage()+" "+".load list from cache if any")
+                                .setMessage(exceptionEn)
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
 
@@ -242,21 +246,23 @@ Web Api webservice sample
 
         Requester aRequester = new Requester.RequesterBuilder(this)
 
-                .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/getinfo")
+                .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
+                .setMethodName("GetProducts")
+                .setNamespace("http://tempuri.org/")
+                .setSoapAction("http://tempuri.org/GetProducts")
 
-                .addBodyParam("low", 0)
-                .addBodyParam("high", 10)
+                .addBodyParams("companyId", 20)
 
-                .addMapClass(ModelJson.class)
+                .addMapClass(ModelSoap.class)
 
-                .setRequestMethod(RequestMethod.GET)
-                .setResponseContentType(ContentType.JSON)
+                .setRequestMethod(RequestMethod.SOAP)
+                .setResponseContentType(ContentType.XML)
+
 
                 .addRequestHandler(new RequestHandler() {
 
                     @Override
                     public void onStart() {
-
 
                         progress.setTitle("Loading");
                         progress.setMessage("Wait while loading...");
@@ -268,10 +274,9 @@ Web Api webservice sample
                     @Override
                     public void onCache(ParentContext context, Object responseObj) {
 
-                        List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
-                        setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
+                        ModelSoap aModel = (ModelSoap) responseObj;
+                        setListAdapter(new SoapArrayAdapter(context.getActivity(), aModel.getEntity()));
                         progress.dismiss();
-
                     }
 
                     @Override
@@ -284,25 +289,26 @@ Web Api webservice sample
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-
-                    if(!hasCache){
-                        List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
-                        setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
-                        progress.dismiss();
-                    }
-
+                        if (!hasCache) {
+                            ModelSoap aModel = (ModelSoap) responseObj;
+                            setListAdapter(new SoapArrayAdapter(context.getActivity(), aModel.getEntity()));
+                            progress.dismiss();
+                        }
 
 
                     }
 
                     @Override
-                    public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+                    public void onError(ParentContext context, Exception exception, String exceptionEn, String exceptionFa) {
 
-                        System.out.println(exception.toString());
+                        Log.e("Error",exception.toString());
+
+                        progress.dismiss();
+
 
                         new AlertDialog.Builder(context.getActivity())
                                 .setTitle("Error")
-                                .setMessage(exception.getMessage()+" "+".load list from cache if any")
+                                .setMessage(exceptionEn)
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
 
@@ -338,8 +344,24 @@ class ModelJson implements Serializable {
 Note:
 ----
 - All mapping class must implements Serializable.
-- If your Body content param is Byte ,use Base64 to convert to String.
+- If your param is bytes use addBodyParam(byte[]) . you also use Base64 to convert to String and put in addBodyParams(key,base64)
 - For more info about create XML mapping class  refer http://simple.sourceforge.net/
+- For SOAP and nested SoapObject use addBodyParam(soapObject) <br />
+  example:
+```java    
+  SoapObject users = new SoapObject(NAMESPACE, "users");
+  SoapObject john = new SoapObject(NAMESPACE, "user");
+    john.addProperty("name", "john");
+    john.addProperty("age", 12);
+  SoapObject marie = new SoapObject(NAMESPACE, "user");
+    marie.addProperty("name", "marie");
+    marie.addProperty("age", 27);
+  users.addSoapObject(john);
+  users.addSoapObject(marie);
+  .addBodyParam(users)
+```
+- For set request header or cookie use addHeaderParam(key,value).
+- For set request timeout for both Soap and webapi use setTimeout(int millisecond) .
 
 
 License
@@ -357,4 +379,4 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
- [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.0.7/requester-1.0.7.aar
+ [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.0.8/requester-1.0.8.aar
