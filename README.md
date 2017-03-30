@@ -13,13 +13,13 @@ Download [the latest aar][3] or grab via Maven:
 <dependency>
   <groupId>ir.bpadashi.requester</groupId>
   <artifactId>requester</artifactId>
-  <version>1.0.8</version>
+  <version>1.0.9</version>
   <type>pom</type>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'ir.bpadashi.requester:requester:1.0.8'
+compile 'ir.bpadashi.requester:requester:1.0.9'
 ```
 Add to build.gradle of your app:
 ```groovy
