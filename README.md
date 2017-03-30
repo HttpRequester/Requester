@@ -80,8 +80,8 @@ SOAP webservice sample
                     @Override
                     public void onCache(ParentContext context, Object responseObj) {
                     
-                    //return object of class you pass in setMode() from last webservice response , that store in database
-                    //good for using when no internet connection available, to last webserivce response result.
+                    //return object of class you pass in setMode() from last response result , that store in database
+                    //good for using when no internet connection available, to get last webserivce response result.
 
                     }
 
@@ -96,7 +96,7 @@ SOAP webservice sample
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
                     
                     //return object of class you pass in setMode() , you just need to cast responseObj to class you define in  setMode()
-                    //and then you object field and method 
+                    //and then use field and method 
                     //Example : for Model.class  Model model=(Model)responseObj;
 
                     }
