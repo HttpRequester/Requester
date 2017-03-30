@@ -38,10 +38,91 @@ Permission
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 
+SOAP webservice sample
+```java
+ 
+        Requester aRequester = new Requester.RequesterBuilder(this)
+
+                //for soap webservices.
+                .setUrl("")
+                .setMethodName("")
+                .setNamespace("")
+                .setSoapAction("")
+                
+                //for web api webserivces.
+                .setUrl("")
+
+                //add content to send 
+                //for SOAP webservices content add to PropertyInfo ,you can use neasted Soapobject and PropertyInfo and pass to         
+                //addParam method.
+                //for GET/POST method content add to body content.
+                .addParam(String name, Object value)
+                
+                //create POJO class that implements Serializable for XML/JSON mapping.
+                .setModel(Model.class)
+                 
+                 //defind SOAP for webservices and GET or POST for webApi.
+                .setMethod(Method)
+                
+                //define webservices reponse content type XML,JSON,TEXT.
+                .setResponseType(ResponseType)
+
+
+                .addRequestHandler(new IRequestHandler() {
+
+                    @Override
+                    public void onStart() {
+                    
+                    //call on start of process to get response , good place to put Preloader .
+
+                    }
+
+                    @Override
+                    public void onCache(ParentContext context, Object responseObj) {
+                    
+                    //return object of class you pass in setMode() from last response result , that store in database
+                    //good for using when no internet connection available, to get last webserivce response result.
+
+                    }
+
+                    @Override
+                    public void onResponse(ParentContext context, ResponseString responseString) {
+                    
+                    //call when webservice response , and you can see result in string.
+
+                    }
+
+                    @Override
+                    public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
+                    
+                    //return object of class you pass in setMode() , you just need to cast responseObj to class you define in  setMode()
+                    //and then use field and method 
+                    //Example : for Model.class  Model model=(Model)responseObj;
+
+                    }
+
+                    @Override
+                    public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+                    
+                    //call when exception happen,
+
+                    }
+
+
+                }).build();
+
+        //run this task in parallel of other task in deferent Thread 
+        aRequester.executeAnSync();
+        
+        //run this task in queue of others task run by executeSync , and FIFO (first in first out)
+        aRequester.executeSync();
+```
 
 SOAP webservice sample
 ```java
-       Requester aRequester = new Requester.RequesterBuilder(this)
+        final ProgressDialog progress = new ProgressDialog(this);
+
+        Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
                 .setMethodName("GetProducts")
@@ -60,7 +141,11 @@ SOAP webservice sample
 
                     @Override
                     public void onStart() {
-                         // Setup your preloader here!!!
+
+                        progress.setTitle("Loading");
+                        progress.setMessage("Wait while loading...");
+                        progress.setCancelable(true);
+                        progress.show();
 
                     }
 
@@ -68,26 +153,43 @@ SOAP webservice sample
                     public void onCache(ParentContext context, Object responseObj) {
 
                         ModelSoap aModel = (ModelSoap) responseObj;
+                        setListAdapter(new SoapArrayAdapter(context.getActivity(), aModel.getEntity()));
+                        progress.dismiss();
                     }
 
                     @Override
-                    public void onResponse(ParentContext context, ResponseString response) {
-                    
-                          System.out.println(responseString.getResponse());
-                          
+                    public void onResponse(ParentContext context, ResponseString responseString) {
+
+                        Log.i("Info", responseString.getResponse());
+
                     }
 
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-                        ModelSoap aModel = (ModelSoap) responseObj;
-                        System.out.println(aModel.getId());
+                        if (!hasCache) {
+                            ModelSoap aModel = (ModelSoap) responseObj;
+                            setListAdapter(new SoapArrayAdapter(context.getActivity(), aModel.getEntity()));
+                            progress.dismiss();
+                        }
+
+
 
                     }
 
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
-                        // TODO Auto-generated method stub
+
+                        new AlertDialog.Builder(context.getActivity())
+                                .setTitle("Error")
+                                .setMessage(exception.getMessage()+" "+".load list from cache if any")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
 
                     }
 
@@ -101,31 +203,48 @@ Create Model class for XML mapping .
 For more info about create XML mapping model  refer http://simple.sourceforge.net/
 ```java    
 @Root(name = "soap:Envelope", strict = false)
-public class Model implements Serializable {
-
+public class ModelSoap implements Serializable {
 
     static final long serialVersionUID =8740213115075839093L;
 
-    @Element(name = "id")
-    @Path("Body/GetProductsResponse/GetProductsResult/Entity")
+    @ElementList(entry = "Entity", inline = true,required = false)
+    @Path("Body/GetProductsResponse/GetProductsResult")
+    private List<Entity> entities;
+
+    public List<Entity> getEntity(){
+        return  entities;
+    }
+}
+
+@Root(strict=false)
+class Entity implements Serializable{
+
+    @Element
     private int id;
+
+    @Element
+    private String name;
 
     public int getId(){
         return id;
     }
 
-
+    public String getName() {
+        return name;
+    }
 }
 ```
 
 Web Api webservice sample
 ```java
-      Requester aRequester = new Requester.RequesterBuilder(this)
+        final ProgressDialog progress = new ProgressDialog(this);
 
-                .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/reg")
+        Requester aRequester = new Requester.RequesterBuilder(this)
 
-                .addParam("email","email@cc.com")
-                .addParam("password","123456")
+                .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/getinfo")
+
+                .addParam("low", 0)
+                .addParam("high", 10)
 
                 .setModel(ModelJson.class)
 
@@ -136,29 +255,40 @@ Web Api webservice sample
 
                     @Override
                     public void onStart() {
-                        // Setup your preloader here!!!
+
+
+                        progress.setTitle("Loading");
+                        progress.setMessage("Wait while loading...");
+                        progress.setCancelable(true);
+                        progress.show();
 
                     }
 
                     @Override
                     public void onCache(ParentContext context, Object responseObj) {
 
+                        List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
+                        setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
+                        progress.dismiss();
+
                     }
 
                     @Override
                     public void onResponse(ParentContext context, ResponseString responseString) {
 
-                        System.out.println(responseString.getResponse());
+                        Log.i("Info", responseString.getResponse());
 
                     }
 
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-                        ModelJson aModel=(ModelJson) responseObj;
 
-                        System.out.println(aModel.getStatusCode());
-                        System.out.println(aModel.getStatusDes());
+                    if(!hasCache){
+                        List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
+                        setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
+                        progress.dismiss();
+                    }
 
 
 
@@ -166,9 +296,19 @@ Web Api webservice sample
 
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
-                        // TODO Auto-generated method stub
 
-                        System.out.println(exception.getMessage());
+                        Log.e("Error", exception.getMessage());
+
+                        new AlertDialog.Builder(context.getActivity())
+                                .setTitle("Error")
+                                .setMessage(exception.getMessage()+" "+".load list from cache if any")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
 
                     }
 
@@ -180,20 +320,19 @@ Web Api webservice sample
 
 Create Model class for json mapping
 ```java    
-   class Model implements Serializable {
-   
-        public int statusCode;
-        public String statusDes;
+class ModelJson implements Serializable {
 
-        public int getStatusCode() {
-            return statusCode;
-        }
+    public int id;
+    public String name;
 
-        public String getStatusDes() {
-            return statusDes;
-        }
-
+    public int getId() {
+        return id;
     }
+
+    public String getName() {
+        return name;
+    }
+}
 ```
 
 
