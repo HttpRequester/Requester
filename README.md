@@ -62,10 +62,10 @@ SOAP webservice sample
                 .setModel(Model.class)
                  
                  //defind SOAP for webservices and GET or POST for webApi.
-                .setMethod(Method.SOAP)
+                .setMethod(Method)
                 
                 //define webservices reponse content type XML,JSON,TEXT.
-                .setResponseType(ResponseType.XML)
+                .setResponseType(ResponseType)
 
 
                 .addRequestHandler(new IRequestHandler() {
