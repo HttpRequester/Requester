@@ -62,7 +62,7 @@ git remote set-url origin https://github.com/HttpRequester/Requester.git
 git init
 git remote add origin https://github.com/HttpRequester/Requester.git
 git add .
-git commit -m "first commit"
+git commit -m "commit"
 git pull origin master
 git push origin master
 

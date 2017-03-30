@@ -382,7 +382,7 @@ public class RequesterRunnable implements Runnable {
         } else if (bodyParam != null && bodyParam instanceof byte[]) {
             postDataBytes = (byte[]) bodyParam;
         } else if (bodyParam != null) {
-            body.append(URLEncoder.encode(String.valueOf(bodyParam), "UTF-8"));
+            body.append(bodyParam.toString());
             postDataBytes = body.toString().getBytes("UTF-8");
         }
 
