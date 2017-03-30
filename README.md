@@ -13,13 +13,13 @@ Download [the latest aar][3] or grab via Maven:
 <dependency>
   <groupId>ir.bpadashi.requester</groupId>
   <artifactId>requester</artifactId>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
   <type>pom</type>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'ir.bpadashi.requester:requester:1.0.6'
+compile 'ir.bpadashi.requester:requester:1.0.7'
 ```
 Add to build.gradle of your app:
 ```groovy
@@ -56,16 +56,17 @@ SOAP webservice sample
                 //for SOAP webservices content add to PropertyInfo ,you can use neasted Soapobject and PropertyInfo and pass to         
                 //addParam method.
                 //for GET/POST method content add to body content.
-                .addParam(String name, Object value)
+                .addBodyParam(String name, Object value)
                 
                 //create POJO class that implements Serializable for XML/JSON mapping.
-                .setModel(Model.class)
+                //create create XML mapping class implements Serializable.  refer http://simple.sourceforge.net/
+                .addMapClass(Model.class)
                  
                  //defind SOAP for webservices and GET or POST for webApi.
-                .setMethod(Method)
+                .setRequestMethod(RequestMethod)
                 
                 //define webservices reponse content type XML,JSON,TEXT.
-                .setResponseType(ResponseType)
+                .setResponseContentType(ContentType)
 
 
                 .addRequestHandler(new IRequestHandler() {
@@ -121,7 +122,7 @@ SOAP webservice sample
 SOAP webservice sample
 ```java
         final ProgressDialog progress = new ProgressDialog(this);
-
+        
         Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
@@ -129,15 +130,15 @@ SOAP webservice sample
                 .setNamespace("http://tempuri.org/")
                 .setSoapAction("http://tempuri.org/GetProducts")
 
-                .addParam("companyId", 20)
+                .addBodyParam("companyId", 20)
 
-                .setModel(ModelSoap.class)
+                .addMapClass(ModelSoap.class)
 
-                .setMethod(Method.SOAP)
-                .setResponseType(ResponseType.XML)
+                .setRequestMethod(RequestMethod.SOAP)
+                .setResponseContentType(ContentType.XML)
 
 
-                .addRequestHandler(new IRequestHandler() {
+                .addRequestHandler(new RequestHandler() {
 
                     @Override
                     public void onStart() {
@@ -199,8 +200,8 @@ SOAP webservice sample
         aRequester.executeAnSync();
 ```
 
-Create Model class for XML mapping .
-For more info about create XML mapping model  refer http://simple.sourceforge.net/
+Create class for XML mapping that implements Serializable .
+For more info about create XML mapping class  refer http://simple.sourceforge.net/
 ```java    
 @Root(name = "soap:Envelope", strict = false)
 public class ModelSoap implements Serializable {
@@ -243,15 +244,15 @@ Web Api webservice sample
 
                 .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/getinfo")
 
-                .addParam("low", 0)
-                .addParam("high", 10)
+                .addBodyParam("low", 0)
+                .addBodyParam("high", 10)
 
-                .setModel(ModelJson.class)
+                .addMapClass(ModelJson.class)
 
-                .setMethod(Method.GET)
-                .setResponseType(ResponseType.JSON)
+                .setRequestMethod(RequestMethod.GET)
+                .setResponseContentType(ContentType.JSON)
 
-                .addRequestHandler(new IRequestHandler() {
+                .addRequestHandler(new RequestHandler() {
 
                     @Override
                     public void onStart() {
@@ -297,7 +298,7 @@ Web Api webservice sample
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
 
-                        Log.e("Error", exception.getMessage());
+                        System.out.println(exception.toString());
 
                         new AlertDialog.Builder(context.getActivity())
                                 .setTitle("Error")
@@ -318,7 +319,7 @@ Web Api webservice sample
         aRequester.executeAnSync();
 ```
 
-Create Model class for json mapping
+Create POJO class that implements Serializable for json mapping
 ```java    
 class ModelJson implements Serializable {
 
@@ -334,6 +335,11 @@ class ModelJson implements Serializable {
     }
 }
 ```
+Note:
+----
+- All mapping class must implements Serializable.
+- If your Body content param is Byte ,use Base64 to convert to String.
+- For more info about create XML mapping class  refer http://simple.sourceforge.net/
 
 
 License
@@ -351,9 +357,4 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
-
- [1]: http://square.github.io/okhttp
- [2]: https://github.com/square/okhttp/wiki
- [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.0.6/requester-1.0.4.aar
- [4]: https://search.maven.org/remote_content?g=com.squareup.okhttp3&a=mockwebserver&v=LATEST
- [snap]: https://oss.sonatype.org/content/repositories/snapshots/
+ [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.0.7/requester-1.0.7.aar
