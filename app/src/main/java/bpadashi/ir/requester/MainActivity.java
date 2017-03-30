@@ -70,8 +70,6 @@ public class MainActivity extends ListActivity {
 
                         Log.i("Info", responseString.getResponse());
 
-                        System.out.println("->" + responseString);
-
                     }
 
                     @Override
@@ -89,7 +87,9 @@ public class MainActivity extends ListActivity {
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionEn, String exceptionFa) {
 
-                        System.out.println(exception);
+                        Log.e("Error",exception.toString());
+
+                        progress.dismiss();
 
 
                         new AlertDialog.Builder(context.getActivity())
@@ -174,7 +174,9 @@ public class MainActivity extends ListActivity {
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionEn, String exceptionFa) {
 
-                        System.out.println(exception.toString());
+                        Log.e("Error",exception.toString());
+
+                        progress.dismiss();
 
                         new AlertDialog.Builder(context.getActivity())
                                 .setTitle("Error")
