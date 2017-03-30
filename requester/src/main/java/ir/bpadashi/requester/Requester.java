@@ -65,6 +65,7 @@ public class Requester {
 
         private List<Param> bodyParams;
         private List<Param> headerParams;
+        private Object bodyParam;
 
         private int timeout;
 
@@ -139,6 +140,10 @@ public class Requester {
             return timeout;
         }
 
+        public Object getBodyParam() {
+            return bodyParam;
+        }
+
 
         //Setter
 
@@ -185,7 +190,7 @@ public class Requester {
             return this;
         }
 
-        public RequesterBuilder addBodyParam(final String key, Object value) {
+        public RequesterBuilder addBodyParams(final String key, Object value) {
 
             if (this.bodyParams == null)
                 this.bodyParams = new ArrayList<>();
@@ -210,6 +215,11 @@ public class Requester {
 
         public RequesterBuilder setResponseContentType(ContentType contentType) {
             this.contentType = contentType;
+            return this;
+        }
+
+        public RequesterBuilder addBodyParam(final Object bodyParam) {
+            this.bodyParam = bodyParam;
             return this;
         }
 

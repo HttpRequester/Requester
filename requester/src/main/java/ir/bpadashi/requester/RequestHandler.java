@@ -9,7 +9,7 @@ public interface RequestHandler {
 	public  void onCache(ParentContext context,Object responseObj);
 	public  void onResponse(ParentContext context,ResponseString responseString);
 	public  void onSuccess(ParentContext context, Object responseObj, boolean hasCache);
-	public  void onError(ParentContext context, Exception exception, String exceptionFarsi);
+	public  void onError(ParentContext context, Exception exception, final String exceptionEn,final String exceptionFa);
 	
 	
 	

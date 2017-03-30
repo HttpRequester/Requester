@@ -37,7 +37,7 @@ public class MainActivity extends ListActivity {
                 .setNamespace("http://tempuri.org/")
                 .setSoapAction("http://tempuri.org/GetProducts")
 
-                .addBodyParam("companyId", 20)
+                .addBodyParams("companyId", 20)
 
                 .addMapClass(ModelSoap.class)
 
@@ -70,6 +70,8 @@ public class MainActivity extends ListActivity {
 
                         Log.i("Info", responseString.getResponse());
 
+                        System.out.println("->" + responseString);
+
                     }
 
                     @Override
@@ -82,15 +84,17 @@ public class MainActivity extends ListActivity {
                         }
 
 
-
                     }
 
                     @Override
-                    public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+                    public void onError(ParentContext context, Exception exception, String exceptionEn, String exceptionFa) {
+
+                        System.out.println(exception);
+
 
                         new AlertDialog.Builder(context.getActivity())
                                 .setTitle("Error")
-                                .setMessage(exception.getMessage()+" "+".load list from cache if any")
+                                .setMessage(exceptionEn)
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
 
@@ -116,8 +120,8 @@ public class MainActivity extends ListActivity {
 
                 .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/getinfo")
 
-                .addBodyParam("low", 0)
-                .addBodyParam("high", 10)
+                .addBodyParams("low", 0)
+                .addBodyParams("high", 10)
 
                 .addMapClass(ModelJson.class)
 
@@ -141,6 +145,7 @@ public class MainActivity extends ListActivity {
                     public void onCache(ParentContext context, Object responseObj) {
 
                         List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
+                        if (modelJsons != null)
                         setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
                         progress.dismiss();
 
@@ -157,24 +162,23 @@ public class MainActivity extends ListActivity {
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
 
-                    if(!hasCache){
-                        List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
-                        setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
-                        progress.dismiss();
-                    }
-
+                        if (!hasCache) {
+                            List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
+                            setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
+                            progress.dismiss();
+                        }
 
 
                     }
 
                     @Override
-                    public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
+                    public void onError(ParentContext context, Exception exception, String exceptionEn, String exceptionFa) {
 
                         System.out.println(exception.toString());
 
                         new AlertDialog.Builder(context.getActivity())
                                 .setTitle("Error")
-                                .setMessage(exception.getMessage()+" "+".load list from cache if any")
+                                .setMessage(exceptionEn)
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
 

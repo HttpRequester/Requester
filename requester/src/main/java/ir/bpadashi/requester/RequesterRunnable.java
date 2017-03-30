@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
-
 import org.json.JSONException;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
@@ -14,8 +13,11 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -30,8 +32,8 @@ import java.util.List;
 import ir.bpadashi.requester.model.Param;
 import ir.bpadashi.requester.model.ParentContext;
 import ir.bpadashi.requester.model.ResponseString;
-import ir.bpadashi.requester.statics.RequestMethod;
 import ir.bpadashi.requester.statics.ContentType;
+import ir.bpadashi.requester.statics.RequestMethod;
 import ir.bpadashi.requester.util.JsonMapper;
 import ir.bpadashi.requester.util.NetworkUtil;
 import ir.bpadashi.requester.util.Serialize;
@@ -53,7 +55,8 @@ public class RequesterRunnable implements Runnable {
     public String Namespace;
     private RequestMethod aRequestMethod;
     private ContentType contentType;
-    private int timeout=30000;
+    private int timeout = 30000;
+    private Object bodyParam;
 
 
     public RequesterRunnable(Requester.RequesterBuilder requester) {
@@ -63,37 +66,37 @@ public class RequesterRunnable implements Runnable {
 
         if (fragment != null) {
             this.context = fragment.getActivity();
-            this.isFragment=true;
+            this.isFragment = true;
         }
-
 
 
         this.aRequestHandler = requester.getIRequestHandler();
         this.url = requester.getUrl();
         this.typeClass = requester.getTypeClass();
         this.bodyParams = requester.getBodyParams();
+        this.bodyParam = requester.getBodyParam();
         this.headerParams = requester.getHeaderParams();
         this.contentType = requester.getContentType();
         this.SoapAction = requester.getSoapAction();
         this.MethodName = requester.getMethodName();
         this.Namespace = requester.getNamespace();
         this.aRequestMethod = requester.getMethod();
-        this.timeout=requester.getTimeout();
+        this.timeout = requester.getTimeout();
     }
 
 
     public void onErrorUi(final RequestHandler aRequestHandler, final Exception exception,
-                          final String exceptionFarsi) {
+                          final String exceptionEn, final String exceptionFa) {
 
         if (this.isFragment) {
-            onErrorFragment(aRequestHandler, exception, exceptionFarsi);
+            onErrorFragment(aRequestHandler, exception, exceptionEn, exceptionFa);
             return;
         } else if (context == null)
             return;
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                aRequestHandler.onError(new ParentContext(context), exception, exceptionFarsi);
+                aRequestHandler.onError(new ParentContext(context), exception, exceptionEn, exceptionFa);
             }
         });
     }
@@ -144,13 +147,13 @@ public class RequesterRunnable implements Runnable {
     }
 
     public void onErrorFragment(final RequestHandler aRequestHandler, final Exception exception,
-                                final String exceptionFarsi) {
+                                final String exceptionEn, final String exceptionFa) {
         if (fragment == null || fragment.getActivity() == null || fragment.getView() == null || !fragment.isAdded())
             return;
         ((Activity) fragment.getActivity()).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                aRequestHandler.onError(new ParentContext(fragment), exception, exceptionFarsi);
+                aRequestHandler.onError(new ParentContext(fragment), exception, exceptionEn, exceptionFa);
             }
         });
     }
@@ -209,10 +212,10 @@ public class RequesterRunnable implements Runnable {
                 onCacheUi(aRequestHandler, obj);
             }
         } catch (NoSuchAlgorithmException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA, TextUtil.ERROR_ON_CACHE_DATA_EN);
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA, TextUtil.ERROR_ON_CACHE_DATA_EN);
             e.printStackTrace();
         }
 
@@ -223,7 +226,7 @@ public class RequesterRunnable implements Runnable {
 
         NetworkUtil aNetworkUtil = new NetworkUtil(context);
         if (!aNetworkUtil.getConnectivityStatus()) {
-            onErrorUi(aRequestHandler, new Exception("no internet connection"), TextUtil.NO_INTERNET);
+            onErrorUi(aRequestHandler, new Exception("no internet connection"), TextUtil.NO_INTERNET, TextUtil.NO_INTERNET_EN);
             System.out.println(TextUtil.NO_INTERNET);
             return;
 
@@ -245,19 +248,33 @@ public class RequesterRunnable implements Runnable {
                     response = getRequestGet(url);
             }
         } catch (IOException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER_EN);
             e.printStackTrace();
         } catch (XmlPullParserException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER_EN);
             e.printStackTrace();
         }
-        onResponseUi(aRequestHandler, response);
+        try {
+            onResponseUi(aRequestHandler, new String((byte[]) response, "UTF-8"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Object obj = null;
 
-        switch (contentType){
+        switch (contentType) {
 
             case TEXT:
+                obj = response;
+                try {
+                    onSuccessUi(aRequestHandler, new String((byte[]) response, "UTF-8"), hasCache);
+                } catch (Exception e) {
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA, TextUtil.INVALID_SERVER_DATA_EN);
+                    e.printStackTrace();
+                }
+                break;
+
+            case BYTE:
                 obj = response;
                 onSuccessUi(aRequestHandler, response, hasCache);
                 break;
@@ -265,13 +282,13 @@ public class RequesterRunnable implements Runnable {
             case JSON:
                 JsonMapper jsonMapper = new JsonMapper();
                 try {
-                    obj = jsonMapper.map(new StringBuilder(response.toString()), typeClass);
+                    obj = jsonMapper.map(new StringBuilder(new String((byte[]) response, "UTF-8")), typeClass);
                     onSuccessUi(aRequestHandler, obj, hasCache);
                 } catch (JSONException e) {
-                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA, TextUtil.INVALID_SERVER_DATA_EN);
                     e.printStackTrace();
                 } catch (Exception e) {
-                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA, TextUtil.INVALID_SERVER_DATA_EN);
                     e.printStackTrace();
                 }
                 break;
@@ -280,10 +297,10 @@ public class RequesterRunnable implements Runnable {
 
                 Serializer serializer = new Persister();
                 try {
-                    obj = serializer.read(typeClass, response.toString());
+                    obj = serializer.read(typeClass, new String((byte[]) response, "UTF-8"));
                     onSuccessUi(aRequestHandler, obj, hasCache);
                 } catch (Exception e) {
-                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA);
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA, TextUtil.INVALID_SERVER_DATA_EN);
                     e.printStackTrace();
                 }
 
@@ -294,32 +311,33 @@ public class RequesterRunnable implements Runnable {
         try {
             new Serialize().saveToFile(context, obj, getRequestId(url));
         } catch (NoSuchAlgorithmException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA, TextUtil.ERROR_ON_CACHE_DATA_EN);
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA);
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA, TextUtil.ERROR_ON_CACHE_DATA_EN);
             e.printStackTrace();
         }
 
 
-
-
     }
 
-    private StringBuilder getRequestGet(String urlString) throws IOException {
+    private Object getRequestGet(String urlString) throws IOException {
 
-        StringBuilder postData = new StringBuilder();
+        StringBuilder body = new StringBuilder();
 
         if (bodyParams != null)
             for (Param param : bodyParams) {
-                if (postData.length() != 0)
-                    postData.append('&');
-                postData.append(URLEncoder.encode(param.key, "UTF-8"));
-                postData.append('=');
-                postData.append(URLEncoder.encode(String.valueOf(param.value), "UTF-8"));
+                if (body.length() != 0)
+                    body.append('&');
+                body.append(URLEncoder.encode(param.key, "UTF-8"));
+                body.append('=');
+                body.append(URLEncoder.encode(String.valueOf(param.value), "UTF-8"));
             }
+        else if (bodyParam != null)
+            body.append(bodyParam.toString());
 
-        URL url = new URL(urlString + "?" + postData);
+
+        URL url = new URL(urlString + "?" + body);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         conn.setRequestMethod("GET");
@@ -334,39 +352,39 @@ public class RequesterRunnable implements Runnable {
 
         conn.setDoInput(true);
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String inputLine;
-        StringBuilder response = new StringBuilder();
-
-        if (conn.getResponseCode() != 200) {
-            onErrorUi(aRequestHandler, new Exception(TextUtil.ERROR_ON_RESPONSE_CODE), TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
-            return response;
+        InputStream in = conn.getInputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        int len;
+        byte[] buffer = new byte[4096];
+        while (-1 != (len = in.read(buffer))) {
+            bos.write(buffer, 0, len);
         }
 
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-
-        return response;
+        return bos.toByteArray();
     }
 
-    private StringBuilder getRequestPost(String urlString) throws IOException {
+    private Object getRequestPost(String urlString) throws IOException {
 
         URL url = new URL(urlString);
 
-        StringBuilder postData = new StringBuilder();
+        StringBuilder body = new StringBuilder();
+        byte[] postDataBytes = null;
 
-        if (bodyParams != null)
+        if (bodyParams != null) {
             for (Param param : bodyParams) {
-                if (postData.length() != 0)
-                    postData.append('&');
-                postData.append(URLEncoder.encode(param.key, "UTF-8"));
-                postData.append('=');
-                postData.append(URLEncoder.encode(String.valueOf(param.value), "UTF-8"));
+                if (body.length() != 0)
+                    body.append('&');
+                body.append(URLEncoder.encode(param.key, "UTF-8"));
+                body.append('=');
+                body.append(URLEncoder.encode(String.valueOf(param.value), "UTF-8"));
             }
-
-        byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+            postDataBytes = body.toString().getBytes("UTF-8");
+        } else if (bodyParam != null && bodyParam instanceof byte[]) {
+            postDataBytes = (byte[]) bodyParam;
+        } else if (bodyParam != null) {
+            body.append(URLEncoder.encode(String.valueOf(bodyParam), "UTF-8"));
+            postDataBytes = body.toString().getBytes("UTF-8");
+        }
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -382,20 +400,18 @@ public class RequesterRunnable implements Runnable {
 
         conn.setDoInput(true);
 
-        conn.getOutputStream().write(postDataBytes);
+        if (postDataBytes != null)
+            conn.getOutputStream().write(postDataBytes);
 
-        Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-
-        StringBuilder response = new StringBuilder();
-
-        if (conn.getResponseCode() != 200) {
-            onErrorUi(aRequestHandler, new Exception(TextUtil.ERROR_ON_RESPONSE_CODE), TextUtil.ERROR_ON_GET_DATA_FROM_SERVER);
-            return response;
+        InputStream in = conn.getInputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        int len;
+        byte[] buffer = new byte[4096];
+        while (-1 != (len = in.read(buffer))) {
+            bos.write(buffer, 0, len);
         }
 
-        for (int c; (c = in.read()) >= 0; )
-            response.append((char) c);
-        return response;
+        return bos.toByteArray();
 
     }
 
@@ -412,17 +428,25 @@ public class RequesterRunnable implements Runnable {
             for (Param param : bodyParams) {
                 request.addProperty(param.key, param.value);
             }
+        else if (bodyParam != null)
+            request.addSoapObject((SoapObject) bodyParam);
 
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         envelope.dotNet = true;
         envelope.setOutputSoapObject(request);
 
-        HttpTransportSE ht = new HttpTransportSE(URL,timeout);
-        ht.debug=true;
+        HttpTransportSE ht = new HttpTransportSE(URL, timeout);
+
+
         ht.call(SOAP_ACTION, envelope);
 
+        ht.debug = true;
+        ht.call(SOAP_ACTION, envelope);
 
-        Object response = ht.responseDump;
+        String response = ht.responseDump;
+
+        if (response != null)
+            return response.getBytes();
 
         return response;
 
@@ -445,7 +469,6 @@ public class RequesterRunnable implements Runnable {
         md.update(aStringBuilder.toString().getBytes("UTF-8"));
         return new BigInteger(1, md.digest()).toString(16);
     }
-
 
 
 }
