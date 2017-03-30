@@ -38,7 +38,6 @@ Permission
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 
-SOAP webservice sample
 ```java
  
         Requester aRequester = new Requester.RequesterBuilder(this)
