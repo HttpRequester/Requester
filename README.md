@@ -13,13 +13,13 @@ Download [the latest aar][3] or grab via Maven:
 <dependency>
   <groupId>ir.bpadashi.requester</groupId>
   <artifactId>requester</artifactId>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
   <type>pom</type>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'ir.bpadashi.requester:requester:1.0.6'
+compile 'ir.bpadashi.requester:requester:1.0.7'
 ```
 Add to build.gradle of your app:
 ```groovy
@@ -56,16 +56,16 @@ SOAP webservice sample
                 //for SOAP webservices content add to PropertyInfo ,you can use neasted Soapobject and PropertyInfo and pass to         
                 //addParam method.
                 //for GET/POST method content add to body content.
-                .addParam(String name, Object value)
+                .addBodyParam(String name, Object value)
                 
                 //create POJO class that implements Serializable for XML/JSON mapping.
-                .setModel(Model.class)
+                .addMapClass(Model.class)
                  
                  //defind SOAP for webservices and GET or POST for webApi.
-                .setMethod(Method)
+                .setRequestMethod(RequestMethod)
                 
                 //define webservices reponse content type XML,JSON,TEXT.
-                .setResponseType(ResponseType)
+                .setResponseContentType(ContentType)
 
 
                 .addRequestHandler(new IRequestHandler() {
@@ -121,7 +121,7 @@ SOAP webservice sample
 SOAP webservice sample
 ```java
         final ProgressDialog progress = new ProgressDialog(this);
-
+        
         Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
@@ -129,15 +129,15 @@ SOAP webservice sample
                 .setNamespace("http://tempuri.org/")
                 .setSoapAction("http://tempuri.org/GetProducts")
 
-                .addParam("companyId", 20)
+                .addBodyParam("companyId", 20)
 
-                .setModel(ModelSoap.class)
+                .addMapClass(ModelSoap.class)
 
-                .setMethod(Method.SOAP)
-                .setResponseType(ResponseType.XML)
+                .setRequestMethod(RequestMethod.SOAP)
+                .setResponseContentType(ContentType.XML)
 
 
-                .addRequestHandler(new IRequestHandler() {
+                .addRequestHandler(new RequestHandler() {
 
                     @Override
                     public void onStart() {
@@ -237,21 +237,21 @@ class Entity implements Serializable{
 
 Web Api webservice sample
 ```java
-        final ProgressDialog progress = new ProgressDialog(this);
+             final ProgressDialog progress = new ProgressDialog(this);
 
         Requester aRequester = new Requester.RequesterBuilder(this)
 
                 .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/getinfo")
 
-                .addParam("low", 0)
-                .addParam("high", 10)
+                .addBodyParam("low", 0)
+                .addBodyParam("high", 10)
 
-                .setModel(ModelJson.class)
+                .addMapClass(ModelJson.class)
 
-                .setMethod(Method.GET)
-                .setResponseType(ResponseType.JSON)
+                .setRequestMethod(RequestMethod.GET)
+                .setResponseContentType(ContentType.JSON)
 
-                .addRequestHandler(new IRequestHandler() {
+                .addRequestHandler(new RequestHandler() {
 
                     @Override
                     public void onStart() {
@@ -297,7 +297,7 @@ Web Api webservice sample
                     @Override
                     public void onError(ParentContext context, Exception exception, String exceptionFarsi) {
 
-                        Log.e("Error", exception.getMessage());
+                        System.out.println(exception.toString());
 
                         new AlertDialog.Builder(context.getActivity())
                                 .setTitle("Error")
