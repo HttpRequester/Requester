@@ -7,13 +7,6 @@
 =======
 >>>>>>> fd30a6f10f5e716a3522f3b852a0c35e1560a7de
 
-*.iml
-.gradle
-/.idea/workspace.xml
-/.idea/libraries
-.DS_Store
-/build
-/captures
 
 
 <<<<<<< HEAD
