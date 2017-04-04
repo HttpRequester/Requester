@@ -13,13 +13,11 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
@@ -31,6 +29,7 @@ import java.util.List;
 
 import ir.bpadashi.requester.model.Param;
 import ir.bpadashi.requester.model.ParentContext;
+import ir.bpadashi.requester.model.RequestFault;
 import ir.bpadashi.requester.model.ResponseString;
 import ir.bpadashi.requester.statics.ContentType;
 import ir.bpadashi.requester.statics.RequestMethod;
@@ -212,10 +211,10 @@ public class RequesterRunnable implements Runnable {
                 onCacheUi(aRequestHandler, obj);
             }
         } catch (NoSuchAlgorithmException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA, TextUtil.ERROR_ON_CACHE_DATA_EN);
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA, TextUtil.ERROR_ON_CACHE_DATA_EN);
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
             e.printStackTrace();
         }
 
@@ -226,8 +225,8 @@ public class RequesterRunnable implements Runnable {
 
         NetworkUtil aNetworkUtil = new NetworkUtil(context);
         if (!aNetworkUtil.getConnectivityStatus()) {
-            onErrorUi(aRequestHandler, new Exception("no internet connection"), TextUtil.NO_INTERNET, TextUtil.NO_INTERNET_EN);
-            System.out.println(TextUtil.NO_INTERNET);
+            onErrorUi(aRequestHandler, new Exception("no internet connection"), TextUtil.NO_INTERNET_EN, TextUtil.NO_INTERNET_EN);
+            System.out.println(TextUtil.NO_INTERNET_EN);
             return;
 
         }
@@ -248,12 +247,18 @@ public class RequesterRunnable implements Runnable {
                     response = getRequestGet(url);
             }
         } catch (IOException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER_EN);
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER_EN, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER_EN);
             e.printStackTrace();
+            return;
         } catch (XmlPullParserException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER_EN);
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER_EN, TextUtil.ERROR_ON_GET_DATA_FROM_SERVER_EN);
             e.printStackTrace();
+            return;
         }
+
+        if (response == null)
+            return;
+
         try {
             onResponseUi(aRequestHandler, new String((byte[]) response, "UTF-8"));
         } catch (Exception e) {
@@ -269,8 +274,9 @@ public class RequesterRunnable implements Runnable {
                 try {
                     onSuccessUi(aRequestHandler, new String((byte[]) response, "UTF-8"), hasCache);
                 } catch (Exception e) {
-                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA, TextUtil.INVALID_SERVER_DATA_EN);
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA_EN, TextUtil.INVALID_SERVER_DATA_FA);
                     e.printStackTrace();
+                    return;
                 }
                 break;
 
@@ -285,23 +291,45 @@ public class RequesterRunnable implements Runnable {
                     obj = jsonMapper.map(new StringBuilder(new String((byte[]) response, "UTF-8")), typeClass);
                     onSuccessUi(aRequestHandler, obj, hasCache);
                 } catch (JSONException e) {
-                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA, TextUtil.INVALID_SERVER_DATA_EN);
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA_EN, TextUtil.INVALID_SERVER_DATA_FA);
                     e.printStackTrace();
+                    return;
                 } catch (Exception e) {
-                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA, TextUtil.INVALID_SERVER_DATA_EN);
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA_EN, TextUtil.INVALID_SERVER_DATA_FA);
                     e.printStackTrace();
+                    return;
                 }
                 break;
 
             case XML:
 
                 Serializer serializer = new Persister();
+
+                try {
+
+                    RequestFault requestSoapFault = serializer.read(RequestFault.class, new String((byte[]) response, "UTF-8"));
+
+                    if (requestSoapFault.getFault() != null) {
+                        IOException e = new IOException(" " + requestSoapFault.getFault().getFaultcode()
+                                + " " + requestSoapFault.getFault().getFaultstring());
+
+                        onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA_EN, TextUtil.INVALID_SERVER_DATA_FA);
+                        return;
+                    }
+
+                } catch (Exception e) {
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA_EN, TextUtil.INVALID_SERVER_DATA_FA);
+                    e.printStackTrace();
+                    return;
+                }
+
                 try {
                     obj = serializer.read(typeClass, new String((byte[]) response, "UTF-8"));
                     onSuccessUi(aRequestHandler, obj, hasCache);
                 } catch (Exception e) {
-                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA, TextUtil.INVALID_SERVER_DATA_EN);
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA_EN, TextUtil.INVALID_SERVER_DATA_FA);
                     e.printStackTrace();
+                    return;
                 }
 
                 break;
@@ -311,10 +339,10 @@ public class RequesterRunnable implements Runnable {
         try {
             new Serialize().saveToFile(context, obj, getRequestId(url));
         } catch (NoSuchAlgorithmException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA, TextUtil.ERROR_ON_CACHE_DATA_EN);
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA, TextUtil.ERROR_ON_CACHE_DATA_EN);
+            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
             e.printStackTrace();
         }
 
@@ -352,15 +380,29 @@ public class RequesterRunnable implements Runnable {
 
         conn.setDoInput(true);
 
-        InputStream in = conn.getInputStream();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        int len;
-        byte[] buffer = new byte[4096];
-        while (-1 != (len = in.read(buffer))) {
-            bos.write(buffer, 0, len);
+        if (conn.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+            InputStream in = conn.getInputStream();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            int len;
+            byte[] buffer = new byte[4096];
+            while (-1 != (len = in.read(buffer))) {
+                bos.write(buffer, 0, len);
+            }
+            return bos.toByteArray();
+        } else {
+            InputStream error = conn.getErrorStream();
+            if (error != null) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(error));
+                String response = "";
+                String str;
+                while ((str = br.readLine()) != null) {
+                    response += str;
+                }
+                throw new IOException(" " + conn.getResponseCode()
+                        + " " + conn.getResponseMessage() + " " + response);
+            }
+            return null;
         }
-
-        return bos.toByteArray();
     }
 
     private Object getRequestPost(String urlString) throws IOException {
@@ -403,15 +445,30 @@ public class RequesterRunnable implements Runnable {
         if (postDataBytes != null)
             conn.getOutputStream().write(postDataBytes);
 
-        InputStream in = conn.getInputStream();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        int len;
-        byte[] buffer = new byte[4096];
-        while (-1 != (len = in.read(buffer))) {
-            bos.write(buffer, 0, len);
-        }
 
-        return bos.toByteArray();
+        if (conn.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+            InputStream in = conn.getInputStream();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            int len;
+            byte[] buffer = new byte[4096];
+            while (-1 != (len = in.read(buffer))) {
+                bos.write(buffer, 0, len);
+            }
+            return bos.toByteArray();
+        } else {
+            InputStream error = conn.getErrorStream();
+            if (error != null) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(error));
+                String response = "";
+                String str;
+                while ((str = br.readLine()) != null) {
+                    response += str;
+                }
+                throw new IOException(response + " " + conn.getResponseCode()
+                        + " " + conn.getResponseMessage() + " " + response);
+            }
+            return null;
+        }
 
     }
 
@@ -436,9 +493,6 @@ public class RequesterRunnable implements Runnable {
         envelope.setOutputSoapObject(request);
 
         HttpTransportSE ht = new HttpTransportSE(URL, timeout);
-
-
-        ht.call(SOAP_ACTION, envelope);
 
         ht.debug = true;
         ht.call(SOAP_ACTION, envelope);
