@@ -121,25 +121,27 @@ How To Implement
 
 SOAP webservice sample
 ```java
-        final ProgressDialog progress = new ProgressDialog(this);
+             final ProgressDialog progress = new ProgressDialog(this);
 
         Requester aRequester = new Requester.RequesterBuilder(this)
 
-                .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/getinfo")
+                .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
+                .setMethodName("GetProducts1")
+                .setNamespace("http://tempuri.org/")
+                .setSoapAction("http://tempuri.org/GetProducts1")
 
-                .addBodyParams("low", 0)
-                .addBodyParams("high", 10)
+                .addBodyParams("companyId", 20)
 
-                .addMapClass(ModelJson.class)
+                .addMapClass(ModelSoap.class)
 
-                .setRequestMethod(RequestMethod.GET)
-                .setResponseContentType(ContentType.JSON)
+                .setRequestMethod(RequestMethod.SOAP)
+                .setResponseContentType(ContentType.XML)
+
 
                 .addRequestHandler(new RequestHandler() {
 
                     @Override
                     public void onStart() {
-
 
                         progress.setTitle("Loading");
                         progress.setMessage("Wait while loading...");
@@ -151,11 +153,9 @@ SOAP webservice sample
                     @Override
                     public void onCache(ParentContext context, Object responseObj) {
 
-                        List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
-                        if (modelJsons != null)
-                        setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
+                        ModelSoap aModel = (ModelSoap) responseObj;
+                        setListAdapter(new SoapArrayAdapter(context.getActivity(), aModel.getEntity()));
                         progress.dismiss();
-
                     }
 
                     @Override
@@ -168,10 +168,9 @@ SOAP webservice sample
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-
                         if (!hasCache) {
-                            List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
-                            setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
+                            ModelSoap aModel = (ModelSoap) responseObj;
+                            setListAdapter(new SoapArrayAdapter(context.getActivity(), aModel.getEntity()));
                             progress.dismiss();
                         }
 
@@ -184,6 +183,7 @@ SOAP webservice sample
                         Log.e("Error",exception.toString());
 
                         progress.dismiss();
+
 
                         new AlertDialog.Builder(context.getActivity())
                                 .setTitle("Error")
