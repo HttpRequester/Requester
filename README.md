@@ -242,27 +242,26 @@ class Entity implements Serializable{
 
 Web Api webservice sample
 ```java
+ 
         final ProgressDialog progress = new ProgressDialog(this);
 
         Requester aRequester = new Requester.RequesterBuilder(this)
 
-                .setUrl("http://onlinepakhsh.com/A_onlinepakhshService.asmx?WSDL")
-                .setMethodName("GetProducts")
-                .setNamespace("http://tempuri.org/")
-                .setSoapAction("http://tempuri.org/GetProducts")
+                .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/getinfo")
 
-                .addBodyParams("companyId", 20)
+                .addBodyParams("low", 0)
+                .addBodyParams("high", 10)
 
-                .addMapClass(ModelSoap.class)
+                .addMapClass(ModelJson.class)
 
-                .setRequestMethod(RequestMethod.SOAP)
-                .setResponseContentType(ContentType.XML)
-
+                .setRequestMethod(RequestMethod.GET)
+                .setResponseContentType(ContentType.JSON)
 
                 .addRequestHandler(new RequestHandler() {
 
                     @Override
                     public void onStart() {
+
 
                         progress.setTitle("Loading");
                         progress.setMessage("Wait while loading...");
@@ -274,9 +273,11 @@ Web Api webservice sample
                     @Override
                     public void onCache(ParentContext context, Object responseObj) {
 
-                        ModelSoap aModel = (ModelSoap) responseObj;
-                        setListAdapter(new SoapArrayAdapter(context.getActivity(), aModel.getEntity()));
+                        List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
+                        if (modelJsons != null)
+                        setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
                         progress.dismiss();
+
                     }
 
                     @Override
@@ -289,9 +290,10 @@ Web Api webservice sample
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
+
                         if (!hasCache) {
-                            ModelSoap aModel = (ModelSoap) responseObj;
-                            setListAdapter(new SoapArrayAdapter(context.getActivity(), aModel.getEntity()));
+                            List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
+                            setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));
                             progress.dismiss();
                         }
 
@@ -304,7 +306,6 @@ Web Api webservice sample
                         Log.e("Error",exception.toString());
 
                         progress.dismiss();
-
 
                         new AlertDialog.Builder(context.getActivity())
                                 .setTitle("Error")
