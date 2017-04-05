@@ -69,7 +69,7 @@ How To Implement
                 .setResponseContentType(ContentType)
 
 
-                .addRequestHandler(new IRequestHandler() {
+                .addRequestHandler(new RequestHandler() {
 
                     @Override
                     public void onStart() {
