@@ -121,7 +121,7 @@ How To Implement
 
 SOAP webservice sample
 ```java
-             final ProgressDialog progress = new ProgressDialog(this);
+        final ProgressDialog progress = new ProgressDialog(this);
 
         Requester aRequester = new Requester.RequesterBuilder(this)
 
