@@ -45,7 +45,7 @@ ext {
             siteUrl           : "https://github.com/HttpRequester/Requester.git",
             gitUrl            : "https://github.com/HttpRequester/Requester.git",
 
-            libraryVersion    : "1.1.0",
+            libraryVersion    : "1.1.1",
 
             developerId       : "babakpadashi",
             developerName     : "Babak Padashi",

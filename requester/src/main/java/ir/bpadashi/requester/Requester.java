@@ -133,7 +133,7 @@ public class Requester {
         }
 
         public List<Param> getHeaderParams() {
-            return bodyParams;
+            return headerParams;
         }
 
         public int getTimeout() {
