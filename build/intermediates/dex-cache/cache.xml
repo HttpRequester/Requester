@@ -111,12 +111,12 @@
     </item>
     <item
         is-multidex="false"
-        jar="/home/bpadashi/Android-Project/Requester/app/build/intermediates/exploded-aar/ir.bpadashi.requester/requester/1.1.0/jars/classes.jar"
+        jar="/home/bpadashi/Android-Project/Requester/app/build/intermediates/exploded-aar/ir.bpadashi.requester/requester/1.1.1/jars/classes.jar"
         jumboMode="false"
         optimize="true"
         revision="24.0.0"
-        sha1="465aafbc08ab5816203f6843d34509dd5ddfb2d1">
-        <dex dex="/home/bpadashi/Android-Project/Requester/app/build/intermediates/pre-dexed/debug/ir.bpadashi.requester-requester-1.1.0_36993a162d3cca0a5b8dc9c6327ce5e35f930657.jar" />
+        sha1="82bfb4152c91fd6304b84493d2e0b7e4e122e586">
+        <dex dex="/home/bpadashi/Android-Project/Requester/app/build/intermediates/pre-dexed/debug/ir.bpadashi.requester-requester-1.1.1_cbdd5fb4ffdd3d53ab8dcfd347c6027a99691865.jar" />
     </item>
     <item
         is-multidex="false"

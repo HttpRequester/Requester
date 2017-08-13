@@ -7,15 +7,15 @@ import java.io.Serializable;
  */
 class ModelJson implements Serializable {
 
-    public int id;
-    public String name;
+    public int ID;
+    public String Name;
 
     public int getId() {
-        return id;
+        return ID;
     }
 
     public String getName() {
-        return name;
+        return Name;
     }
 
 }

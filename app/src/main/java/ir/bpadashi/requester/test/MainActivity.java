@@ -118,10 +118,7 @@ public class MainActivity extends ListActivity {
 
         Requester aRequester = new Requester.RequesterBuilder(this)
 
-                .setUrl("http://whoyou-marketgen.rhcloud.com/restful/services/getinfo")
-
-                .addBodyParams("low", 0)
-                .addBodyParams("high", 10)
+                .setUrl("http://toplinks.me/api/ApiServices/GetStateOrCity/1")
 
                 .addMapClass(ModelJson.class)
 

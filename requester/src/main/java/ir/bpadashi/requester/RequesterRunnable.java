@@ -306,6 +306,27 @@ public class RequesterRunnable implements Runnable {
                 Serializer serializer = new Persister();
 
                 try {
+                    obj = serializer.read(typeClass, new String((byte[]) response, "UTF-8"));
+                    onSuccessUi(aRequestHandler, obj, hasCache);
+
+                    try {
+                        new Serialize().saveToFile(context, obj, getRequestId(url));
+                    } catch (NoSuchAlgorithmException e) {
+                        onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
+                        e.printStackTrace();
+                    }
+
+                    return;
+
+                } catch (Exception e) {
+                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA_EN, TextUtil.INVALID_SERVER_DATA_FA);
+                    e.printStackTrace();
+                }
+
+                try {
 
                     RequestFault requestSoapFault = serializer.read(RequestFault.class, new String((byte[]) response, "UTF-8"));
 
@@ -314,36 +335,15 @@ public class RequesterRunnable implements Runnable {
                                 + " " + requestSoapFault.getFault().getFaultstring());
 
                         onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA_EN, TextUtil.INVALID_SERVER_DATA_FA);
-                        return;
                     }
 
                 } catch (Exception e) {
                     onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA_EN, TextUtil.INVALID_SERVER_DATA_FA);
                     e.printStackTrace();
-                    return;
-                }
-
-                try {
-                    obj = serializer.read(typeClass, new String((byte[]) response, "UTF-8"));
-                    onSuccessUi(aRequestHandler, obj, hasCache);
-                } catch (Exception e) {
-                    onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA_EN, TextUtil.INVALID_SERVER_DATA_FA);
-                    e.printStackTrace();
-                    return;
                 }
 
                 break;
 
-        }
-
-        try {
-            new Serialize().saveToFile(context, obj, getRequestId(url));
-        } catch (NoSuchAlgorithmException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
-            e.printStackTrace();
         }
 
 
