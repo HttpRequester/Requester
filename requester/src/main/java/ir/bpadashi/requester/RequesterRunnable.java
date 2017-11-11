@@ -357,6 +357,9 @@ public class RequesterRunnable implements Runnable {
             for (Param param : bodyParams) {
                 if (body.length() != 0)
                     body.append('&');
+                else
+                    body.append("?");
+
                 body.append(URLEncoder.encode(param.key, "UTF-8"));
                 body.append('=');
                 body.append(URLEncoder.encode(String.valueOf(param.value), "UTF-8"));
@@ -365,7 +368,7 @@ public class RequesterRunnable implements Runnable {
             body.append(bodyParam.toString());
 
 
-        URL url = new URL(urlString + "?" + body);
+        URL url = new URL(urlString + body);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         conn.setRequestMethod("GET");
