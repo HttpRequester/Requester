@@ -72,6 +72,8 @@ public class Requester {
         private RequestMethod aRequestMethod;
         private ContentType contentType;
 
+        private boolean cache=true;
+
 
         //Getter
 
@@ -125,6 +127,10 @@ public class Requester {
 
         public ContentType getContentType() {
             return contentType;
+        }
+
+        public boolean getCache() {
+            return cache;
         }
 
 
@@ -225,6 +231,11 @@ public class Requester {
 
         public RequesterBuilder setTimeout(final int timeout) {
             this.timeout = timeout;
+            return this;
+        }
+
+        public RequesterBuilder setCache(final boolean cache) {
+            this.cache = cache;
             return this;
         }
 

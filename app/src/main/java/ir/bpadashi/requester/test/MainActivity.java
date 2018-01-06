@@ -158,7 +158,6 @@ public class MainActivity extends ListActivity {
                     @Override
                     public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
 
-
                         if (!hasCache) {
                             List<ModelJson> modelJsons = (List<ModelJson>) responseObj;
                             setListAdapter(new JsonArrayAdapter(context.getActivity(), modelJsons));

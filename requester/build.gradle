@@ -8,13 +8,13 @@ ext {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 24
-        versionCode 14
-        versionName "1.1.4"
+        versionCode 16
+        versionName "1.1.6"
     }
     buildTypes {
         release {
@@ -40,13 +40,10 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.0.0-beta1'
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.google.code.ksoap2-android:ksoap2-android:3.6.1'
-
-    compile('org.simpleframework:simple-xml:2.7.1')
-            {
-                exclude group: 'stax', module: 'stax-api'
-                exclude group: 'xpp3', module: 'xpp3'
-            }
-
+    compile('org.simpleframework:simple-xml:2.7.1') {
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'xpp3', module: 'xpp3'
+    }
 }
 
 apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'

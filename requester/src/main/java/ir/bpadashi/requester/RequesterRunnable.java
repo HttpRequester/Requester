@@ -56,6 +56,7 @@ public class RequesterRunnable implements Runnable {
     private ContentType contentType;
     private int timeout = 30000;
     private Object bodyParam;
+    private boolean cache;
 
 
     public RequesterRunnable(Requester.RequesterBuilder requester) {
@@ -81,6 +82,7 @@ public class RequesterRunnable implements Runnable {
         this.Namespace = requester.getNamespace();
         this.aRequestMethod = requester.getMethod();
         this.timeout = requester.getTimeout();
+        this.cache = requester.getCache();
     }
 
 
@@ -204,19 +206,20 @@ public class RequesterRunnable implements Runnable {
         });
 
         boolean hasCache = false;
-        try {
-            Object obj = new Serialize().readFromFile(context, getRequestId(url));
-            if (obj != null) {
-                hasCache = true;
-                onCacheUi(aRequestHandler, obj);
+        if (cache)
+            try {
+                Object obj = new Serialize().readFromFile(context, getRequestId(url));
+                if (obj != null) {
+                    hasCache = true;
+                    onCacheUi(aRequestHandler, obj);
+                }
+            } catch (NoSuchAlgorithmException e) {
+                onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
+                e.printStackTrace();
             }
-        } catch (NoSuchAlgorithmException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
-            e.printStackTrace();
-        }
 
 		/*
          * try { Thread.sleep(5000); } catch (InterruptedException e1) { // TODO
@@ -273,6 +276,15 @@ public class RequesterRunnable implements Runnable {
                 obj = response;
                 try {
                     onSuccessUi(aRequestHandler, new String((byte[]) response, "UTF-8"), hasCache);
+                    try {
+                        new Serialize().saveToFile(context, obj, getRequestId(url));
+                    } catch (NoSuchAlgorithmException e) {
+                        onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
+                        e.printStackTrace();
+                    }
                 } catch (Exception e) {
                     onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA_EN, TextUtil.INVALID_SERVER_DATA_FA);
                     e.printStackTrace();
@@ -283,6 +295,15 @@ public class RequesterRunnable implements Runnable {
             case BYTE:
                 obj = response;
                 onSuccessUi(aRequestHandler, response, hasCache);
+                try {
+                    new Serialize().saveToFile(context, obj, getRequestId(url));
+                } catch (NoSuchAlgorithmException e) {
+                    onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
+                    e.printStackTrace();
+                }
                 break;
 
             case JSON:
@@ -290,6 +311,15 @@ public class RequesterRunnable implements Runnable {
                 try {
                     obj = jsonMapper.map(new StringBuilder(new String((byte[]) response, "UTF-8")), typeClass);
                     onSuccessUi(aRequestHandler, obj, hasCache);
+                    try {
+                        new Serialize().saveToFile(context, obj, getRequestId(url));
+                    } catch (NoSuchAlgorithmException e) {
+                        onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        onErrorUi(aRequestHandler, e, TextUtil.ERROR_ON_CACHE_DATA_EN, TextUtil.ERROR_ON_CACHE_DATA_EN);
+                        e.printStackTrace();
+                    }
                 } catch (JSONException e) {
                     onErrorUi(aRequestHandler, e, TextUtil.INVALID_SERVER_DATA_EN, TextUtil.INVALID_SERVER_DATA_FA);
                     e.printStackTrace();
