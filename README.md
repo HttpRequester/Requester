@@ -13,13 +13,13 @@ Download [the latest aar][3] or grab via Maven:
 <dependency>
   <groupId>ir.bpadashi.requester</groupId>
   <artifactId>requester</artifactId>
-  <version>1.1.7</version>
+  <version>1.1.9</version>
   <type>pom</type>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'ir.bpadashi.requester:requester:1.1.7'
+compile 'ir.bpadashi.requester:requester:1.1.9'
 ```
 Add to build.gradle of your app:
 ```groovy
@@ -380,4 +380,4 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
- [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.1.7/requester-1.1.7.aar
+ [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.1.7/requester-1.1.9.aar
