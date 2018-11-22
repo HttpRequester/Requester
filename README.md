@@ -380,4 +380,4 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
- [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.1.7/requester-1.1.9.aar
+ [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.1.9/requester-1.1.9.aar
