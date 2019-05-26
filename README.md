@@ -13,13 +13,13 @@ Download [the latest aar][3] or grab via Maven:
 <dependency>
   <groupId>ir.bpadashi.requester</groupId>
   <artifactId>requester</artifactId>
-  <version>1.1.9</version>
+  <version>1.2.1</version>
   <type>pom</type>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'ir.bpadashi.requester:requester:1.1.9'
+compile 'ir.bpadashi.requester:requester:1.2.1'
 ```
 Add to build.gradle of your app:
 ```groovy
@@ -94,7 +94,7 @@ How To Implement
                     }
 
                     @Override
-                    public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
+                    public void onSuccess(ParentContext context, Object responseObj, int responseCode, boolean hasCache) {
                     
                     //return object of class you pass in setMode() , you just need to cast responseObj to class you define in  setMode()
                     //and then use field and method 
@@ -166,7 +166,7 @@ SOAP webservice sample
                     }
 
                     @Override
-                    public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
+                    public void onSuccess(ParentContext context, Object responseObj, int responseCode, boolean hasCache) {
 
                         if (!hasCache) {
                             ModelSoap aModel = (ModelSoap) responseObj;
@@ -288,7 +288,7 @@ Web Api webservice sample
                     }
 
                     @Override
-                    public void onSuccess(ParentContext context, Object responseObj, boolean hasCache) {
+                    public void onSuccess(ParentContext context, Object responseObj, int responseCode, boolean hasCache) {
 
 
                         if (!hasCache) {
@@ -380,4 +380,4 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
- [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.1.9/requester-1.1.9.aar
+ [3]: https://dl.bintray.com/httprequester/maven/ir/bpadashi/requester/requester/1.1.9/requester-1.2.1.aar
